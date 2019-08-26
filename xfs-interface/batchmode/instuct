@@ -1,0 +1,10 @@
+load --os ../spl/spl_progs/os_startup.xsm
+load --init ../expl/samples/even100.xsm
+load --int=10 ../spl/spl_progs/haltprog.xsm
+load --exhandler ../spl/spl_progs/haltprog.xsm
+load --int=7 ../spl/spl_progs/sample_int7.xsm
+load --int=timer ../spl/spl_progs/sample_timer.xsm
+load --library ../expl/library.lib
+load --idle ../expl/samples/idleprogram.xsm
+load --module 7 ../spl/spl_progs/boot_module.xsm
+exit
