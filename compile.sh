@@ -6,6 +6,7 @@ cd spl
 ./spl spl_progs/Timer.spl
 ./spl spl_progs/disk_interrupt_handler.spl
 ./spl spl_progs/console_interrupt_handler.spl
+./spl spl_progs/INT4.spl
 ./spl spl_progs/INT6.spl
 ./spl spl_progs/INT7.spl
 ./spl spl_progs/INT8.spl

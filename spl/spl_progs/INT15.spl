@@ -1,2 +1,59 @@
 //int15
+//shutdown system call
+
+alias userSP R1;
+userSP = SP;
+
+alias currentPID R2;
+currentPID = [SYSTEM_STATUS_TABLE+1];
+
+[PROCESS_TABLE + currentPID*16 +13] = SP;
+SP = [PROCESS_TABLE + currentPID*16 + 11]*512 - 1;
+
+[PROCESS_TABLE + currentPID*16 + 9] = 21;
+
+if(currentPID != 1 && [PROCESS_TABLE + currentPID*16 + 3] != 1) then
+	[[PTBR + 2 * ((userSP - 1) / 512)] * 512 + ((userSP - 1) % 512)]=-1;
+	SP = [PROCESS_TABLE + currentPID * 16 + 13];
+	[PROCESS_TABLE + currentPID * 16 + 9] = 0;
+	ireturn;
+endif;
+
+//storing back inode table into the disk
+multipush(R1,R2);
+R1 = 1;
+R2 = currentPID;
+R3 = 59;
+R4 = 3;
+call MOD_4;
+multipop(R1,R2);
+
+//storing back user table into the disk
+multipush(R1,R2);
+R1 = 1;
+R2 = currentPID;
+R3 = 60;
+R4 = 4;
+call MOD_4;
+multipop(R1,R2);
+
+//storing back disk free list into the disk
+multipush(R1,R2);
+R1 = 1;
+R2 = currentPID;
+R3 = 61;
+R4 = 2;
+call MOD_4;
+multipop(R1,R2);
+
+//storing back root file into the disk
+multipush(R1,R2);
+R1 = 1;
+R2 = currentPID;
+R3 = 62;
+R4 = 5;
+call MOD_4;
+multipop(R1,R2);
+
 halt;
+

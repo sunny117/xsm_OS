@@ -14,6 +14,51 @@ if(functionNum == 3) then
 	return;
 endif;
 
+//Acquire Inode
+//Locks the inode entry corresponding to the inodeindex given as input. Assumes a valid PID and a valid inode index are given.
+if(functionNum == 4) then
+	alias inodeindex R2;
+	alias currentPID R3;
+	while([FILE_STATUS_TABLE + 4*inodeindex] != -1 ) do
+		[PROCESS_TABLE + 16 * currentPID + 4] = WAIT_FILE;
+		[PROCESS_TABLE + 16 * currentPID + 5] = inodeindex;
+		
+		// Invoke the switch_context() function in the Scheduler Module.
+		multipush(R1,R2,R3);
+		call MOD_5;
+		multipop(R1,R2,R3);
+	endwhile;
+	if([FILE_STATUS_TABLE + 4*inodeindex + 1] == -1) then
+			returnValue = -1;
+			return;
+	endif;
+	[FILE_STATUS_TABLE + 4*inodeindex] = currentPID;
+	returnValue = 0;
+	return;
+endif;
+
+//Release Inode
+//Frees the lock of the inode entry corresponding to the inodeindex given as input. Assumes a valid PID and a valid inode index are given.
+if(functionNum == 5) then
+	alias inodeindex R2;
+	alias currentPID R3;
+	if([FILE_STATUS_TABLE + 4*inodeindex] != currentPID) then
+		returnValue = -1;
+		return;
+	endif;
+	[FILE_STATUS_TABLE + 4*inodeindex] = -1;
+	alias counter R4;
+	counter = 0;
+	while(counter < 16) do
+		if([PROCESS_TABLE + counter*16 + 4] == WAIT_FILE && [PROCESS_TABLE + counter*16 + 5] == inodeindex) then
+				[PROCESS_TABLE + counter*16 + 4] = READY;	
+		endif;
+		counter = counter + 1;
+	endwhile; 
+	returnValue = 0;
+	return;
+endif;
+
 //Acquire semaphore
 //Acquires a semaphore and returns its semaphore number. Assumes a valid PID is given as input. Returns -1 upon failure
 if(functionNum == 6) then
@@ -52,7 +97,7 @@ if(functionNum == 7) then
 		counter = 0;
 		while(counter < MAX_PROC_NUM) do
 			if([PROCESS_TABLE + 16*counter + 4] == WAIT_SEMAPHORE && [PROCESS_TABLE + 16*counter + 5] == semTableIndex) then
-				[PROCESS_TABLE + 16*counter +4] =READY;			
+				[PROCESS_TABLE + 16*counter + 4] = READY;	
 			endif;
 			counter = counter +1 ;
 		endwhile;

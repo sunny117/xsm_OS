@@ -1,5 +1,28 @@
 alias functionNum R1;
 
+//DISK_STORE
+//Stores the contents of the page into the disk block. A valid PID as input is assumed.
+if(functionNum == 1) then
+	alias currentPID R2;
+	alias pageNo R3;
+	alias blockNo R4;
+	multipush(R1,R2,R3,R4);
+	R1 = 3;
+	R2 = currentPID;
+	call MOD_0;
+	multipop(R1,R2,R3,R4);
+	[DISK_STATUS_TABLE+1]=1;
+	[DISK_STATUS_TABLE+2]=pageNo;
+	[DISK_STATUS_TABLE+3]=blockNo;
+	[DISK_STATUS_TABLE+4]=currentPID;
+	store(pageNo,blockNo);
+	[PROCESS_TABLE+(currentPID)*16+4]=WAIT_DISK;
+	multipush(R1,R2,R3,R4);
+	call MOD_5;
+	multipop(R1,R2,R3,R4);
+	return;
+endif;
+
 //DISK_LOAD
 //Loads the contents of the disk block to the page. A valid PID as input is assumed.
 if(functionNum == 2) then

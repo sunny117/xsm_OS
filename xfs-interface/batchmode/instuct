@@ -6,6 +6,7 @@ load --exhandler ../spl/spl_progs/exception_handler.xsm
 load --int=timer ../spl/spl_progs/Timer.xsm
 load --int=disk ../spl/spl_progs/disk_interrupt_handler.xsm
 load --int=console ../spl/spl_progs/console_interrupt_handler.xsm
+load --int=4 ../spl/spl_progs/INT4.xsm
 load --int=6 ../spl/spl_progs/INT6.xsm
 load --int=7 ../spl/spl_progs/INT7.xsm
 load --int=8 ../spl/spl_progs/INT8.xsm
