@@ -1,9 +1,0 @@
-alias counter R0;
-alias answer R1;
-counter = 1;
-answer = 0;
-while(counter <= 20) do
-	answer = answer + (counter*counter);
-	counter = counter + 1;
-endwhile;
-print answer;

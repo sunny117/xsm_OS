@@ -1,0 +1,100 @@
+//int 13
+//Semget and Semrelease has system call numbers 17 and 18 respectively.
+
+alias userSP R1;
+userSP = SP;
+
+alias currentPID R2;
+currentPID = [SYSTEM_STATUS_TABLE+1];
+
+[PROCESS_TABLE + currentPID*16 +13] = SP;
+SP = [PROCESS_TABLE + currentPID*16 + 11]*512 - 1;
+
+alias syscall R3;
+syscall = [[PTBR + 2*((userSP-5)/512)]*512 + (userSP-5)%512];
+
+[PROCESS_TABLE + currentPID*16 + 9] = syscall;
+
+//Semget
+if(syscall == 17) then
+	alias userAreaPage R4;
+	userAreaPage = [PROCESS_TABLE + currentPID*16 + 11];
+	alias counter R5;
+	counter = 0;
+
+	//finding the index of a free entry in the Per Process Resource Table
+	while(counter<8) do
+		if([userAreaPage*512 + 512 - 16 + 2*counter] == -1) then
+			break;		
+		endif;
+		counter = counter+1;
+	endwhile;
+
+	//IF there is no free enty return -1
+	if(counter == 8) then
+		[[PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512] = -1;
+		[PROCESS_TABLE + currentPID*16 + 9] = 0;
+		SP = [PROCESS_TABLE + currentPID*16 + 13];
+		ireturn;
+	endif;
+
+	//Resource Identifier field of per process resource table is set to 1 to indicate that the resource is a semaphore
+	[userAreaPage*512 + 512 - 16 + 2*counter] = 1;
+	multipush(R1,R2,R3,R4,R5);
+	R1 = 6;
+	R2 = currentPID;
+	call MOD_0;	
+	multipop(R1,R2,R3,R4,R5);
+	//if there are no free semaphores return -2
+	if(R0 == -1) then
+		[[PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512] = -2;
+		[PROCESS_TABLE + currentPID*16 + 9] = 0;
+		SP = [PROCESS_TABLE + currentPID*16 + 13];
+		ireturn;
+	endif;
+
+	//store the index of the semaphore table entry in the per process resource table entry
+	[userAreaPage*512 + 512 - 16 + 2*counter + 1] = R0;
+
+	[[PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512] = counter;
+	[PROCESS_TABLE + currentPID*16 + 9] = 0;
+	SP = [PROCESS_TABLE + currentPID*16 + 13];
+	ireturn;
+
+endif;
+
+//Semrelease
+if(syscall == 18) then
+	alias semDesc R4;
+	semDesc = [[PTBR + 2*((userSP-4)/512)]*512 + (userSP-4)%512];
+	if(semDesc <0 || semDesc > 7 || [[PROCESS_TABLE + 16 * currentPID +11]*512 + 512 -16 + 2*semDesc] != 1) then
+		[[PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512] = -1;
+		[PROCESS_TABLE + currentPID*16 + 9] = 0;
+		SP = [PROCESS_TABLE + currentPID*16 + 13];
+		ireturn;
+	endif;
+
+	//invoking release semaphore function
+	multipush(R1,R2,R3,R4);
+	R1 = 7;
+	R2 = semDesc;
+	R3 = currentPID;
+	call MOD_0;
+	multipop(R1,R2,R3,R4);
+	[[PROCESS_TABLE + 16 * currentPID +11]*512 + 512 -16 + 2*semDesc + 1] = -1;
+	[[PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512] = 0;
+	[PROCESS_TABLE + currentPID*16 + 9] = 0;
+	SP = [PROCESS_TABLE + currentPID*16 + 13];
+	ireturn;
+endif;
+
+
+
+
+
+
+
+
+
+
+

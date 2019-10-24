@@ -1,10 +1,24 @@
 load --os ../spl/spl_progs/os_startup.xsm
-load --init ../expl/samples/even100.xsm
-load --int=10 ../spl/spl_progs/haltprog.xsm
-load --exhandler ../spl/spl_progs/haltprog.xsm
-load --int=7 ../spl/spl_progs/sample_int7.xsm
-load --int=timer ../spl/spl_progs/sample_timer.xsm
 load --library ../expl/library.lib
 load --idle ../expl/samples/idleprogram.xsm
-load --module 7 ../spl/spl_progs/boot_module.xsm
+load --init ../expl/expl_progs/shellversion2.xsm
+load --exhandler ../spl/spl_progs/exception_handler.xsm
+load --int=timer ../spl/spl_progs/Timer.xsm
+load --int=disk ../spl/spl_progs/disk_interrupt_handler.xsm
+load --int=console ../spl/spl_progs/console_interrupt_handler.xsm
+load --int=6 ../spl/spl_progs/INT6.xsm
+load --int=7 ../spl/spl_progs/INT7.xsm
+load --int=8 ../spl/spl_progs/INT8.xsm
+load --int=9 ../spl/spl_progs/INT9.xsm
+load --int=10 ../spl/spl_progs/INT10.xsm
+load --int=11 ../spl/spl_progs/INT11.xsm
+load --int=13 ../spl/spl_progs/INT13.xsm
+load --int=14 ../spl/spl_progs/INT14.xsm
+load --int=15 ../spl/spl_progs/INT15.xsm
+load --module 0 ../spl/spl_progs/module0.xsm
+load --module 1 ../spl/spl_progs/module1.xsm
+load --module 2 ../spl/spl_progs/module2.xsm
+load --module 4 ../spl/spl_progs/module4.xsm
+load --module 5 ../spl/spl_progs/module5.xsm
+load --module 7 ../spl/spl_progs/module7.xsm
 exit

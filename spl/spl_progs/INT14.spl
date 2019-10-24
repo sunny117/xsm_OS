@@ -1,0 +1,92 @@
+//int14
+//SemLock and SemUnLock has system call numbers 19 and 20 respectively.
+
+alias userSP R1;
+userSP = SP;
+
+alias currentPID R2;
+currentPID = [SYSTEM_STATUS_TABLE+1];
+
+[PROCESS_TABLE + currentPID*16 +13] = SP;
+SP = [PROCESS_TABLE + currentPID*16 + 11]*512 - 1;
+
+alias syscall R3;
+syscall = [[PTBR + 2*((userSP-5)/512)]*512 + (userSP-5)%512];
+[PROCESS_TABLE + currentPID*16 + 9] = syscall;
+
+//SemLock
+if(syscall == 19) then
+	alias semDesc R4;
+	semDesc = [[PTBR + 2*((userSP-4)/512)]*512 + (userSP-4)%512];
+	if(semDesc <0 || semDesc > 7 || [[PROCESS_TABLE + 16 * currentPID +11]*512 + 512 -16 + 2*semDesc] != 1) then
+		[[PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512] = -1;
+		[PROCESS_TABLE + currentPID*16 + 9] = 0;
+		SP = [PROCESS_TABLE + currentPID*16 + 13];
+		ireturn;
+	endif;
+	alias Semindex R5;
+	Semindex = [[PROCESS_TABLE + 16 * currentPID + 11] * 512 + 512 - 16 + 2 * semDesc + 1];
+	// while the semaphore is locked by a process other than the current process do    /* Check the Locking PID field in the Semaphore table */
+	while ([SEMAPHORE_TABLE + 4 * Semindex] != -1 && [SEMAPHORE_TABLE + 4 * Semindex] != currentPID) do
+		// Change the state of the current process to (WAIT_SEMAPHORE, Semaphore table index of the locked semaphore).
+		[PROCESS_TABLE + 16 * currentPID + 4] = WAIT_SEMAPHORE;
+		[PROCESS_TABLE + 16 * currentPID + 5] = Semindex;
+		
+		// Invoke the switch_context() function in the Scheduler Module.
+		multipush(R1,R2,R3,R4,R5);
+		call MOD_5;
+		multipop(R1,R2,R3,R4,R5);
+	endwhile;
+
+	// Change the Locking PID to PID of the current process in the Semaphore Table .
+	[SEMAPHORE_TABLE + 4 * Semindex] = currentPID;
+
+	[[PTBR + 2 * ((userSP - 1) / 512)] * 512 + (userSP - 1) % 512] = 0;
+	[PROCESS_TABLE + currentPID*16 + 9] = 0;
+	SP = [PROCESS_TABLE + currentPID*16 + 13];
+	ireturn;
+endif;
+
+//SemUnLock
+if(syscall == 20) then
+	alias semDesc R4;
+	semDesc = [[PTBR + 2*((userSP-4)/512)]*512 + (userSP-4)%512];
+	if(semDesc <0 || semDesc > 7 || [[PROCESS_TABLE + 16 * currentPID +11]*512 + 512 -16 + 2*semDesc] != 1) then
+		[[PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512] = -1;
+		[PROCESS_TABLE + currentPID*16 + 9] = 0;
+		SP = [PROCESS_TABLE + currentPID*16 + 13];
+		ireturn;
+	endif;
+	alias Semindex R5;
+	Semindex = [[PROCESS_TABLE + 16 * currentPID + 11] * 512 + 512 - 16 + 2 * semDesc + 1];
+	// If semaphore is locked. /* Check the Locking PID in the Semaphore table */
+	if ([SEMAPHORE_TABLE + 4 * Semindex] != -1) then
+		// If current process has not locked the semaphore, return -2.   /* The semaphore is locked by some other process.*/
+		if ([SEMAPHORE_TABLE + 4 * Semindex] != currentPID) then
+			[[PTBR + 2 * ((userSP - 1) / 512)] * 512 + (userSP - 1) % 512] = -2;
+			[PROCESS_TABLE + currentPID * 16 + 9] = 0;
+			SP = [PROCESS_TABLE + currentPID * 16 + 13];
+			ireturn;
+		endif;
+
+		//  Set the Locking PID to -1.   /* Unlock the semaphore. */
+		[SEMAPHORE_TABLE + 4 * Semindex] = -1;
+
+		alias counter R6;
+		counter = 0;
+		//  Loop through the process table and change the state to (READY, _ ) for all the processes 
+	    //  in the state (WAIT_SEMAPHORE, Semaphore table index of the locked semaphore). 
+		while (counter < MAX_PROC_NUM) do
+			if ([PROCESS_TABLE + 16 * counter + 4] == WAIT_SEMAPHORE && [PROCESS_TABLE + 16 * counter + 5] == Semindex) then
+				[PROCESS_TABLE + 16 * counter + 4] = READY;
+			endif;
+			counter = counter + 1;
+		endwhile;
+	endif;
+
+	[[PTBR + 2 * ((userSP - 1) / 512)] * 512 + (userSP - 1) % 512] = 0;
+	[PROCESS_TABLE + currentPID*16 + 9] = 0;
+	SP = [PROCESS_TABLE + currentPID*16 + 13];
+	ireturn;
+endif;
+

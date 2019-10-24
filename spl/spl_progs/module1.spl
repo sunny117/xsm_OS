@@ -1,0 +1,147 @@
+//Process Manager Module
+alias functionNum R1;
+
+//Get Pcb Entry
+//Returns a free PCB index. Returns -1 if PCB is full 
+if(functionNum == 1) then
+	alias count R0;
+	count = 1;
+	while(count < 16) do
+		if([PROCESS_TABLE+count*16+4] == TERMINATED) then
+			break;
+		endif;
+		count = count + 1;
+	endwhile;
+	//count contains the free PID
+	if(count == 16) then
+		count = -1;
+		return;
+	endif;
+	
+	[PROCESS_TABLE + 16 * count + 1]  = count;
+	[PROCESS_TABLE + 16 * count + 4]  = ALLOCATED;
+	[PROCESS_TABLE + 16 * count + 14] = PAGE_TABLE_BASE + count * 20;
+	[PROCESS_TABLE + 16 * count + 15] = 10;
+	return;
+endif;
+
+//FREE_USER_AREA_PAGE
+//Frees the User Area Page.
+//In later stage frees all the resources in the Resource Table in the User Area Page
+if(functionNum == 2) then
+	alias currentPID R2;
+
+	alias userAreaPage R3;
+    userAreaPage = [PROCESS_TABLE + currentPID * 16 + 11];
+
+    alias PerProcTable R4;
+    PerProcTable = (userAreaPage + 1) * 512 - 16;
+
+    alias counter R5;
+    counter = 0;
+    // loop through the Resource Table
+    while(counter < 16) do
+        // if (the resource is a semaphore) Release the semaphore by calling the Release Semaphore()
+        if ([PerProcTable + counter] == SEMAPHORE && [PerProcTable + counter+1]!=-1) then
+            multipush(R1,R2,R3,R4,R5);
+            R1 = 7;
+            R3 = currentPID;
+            R2 = [PerProcTable + counter + 1];
+            call MOD_0;
+            multipop(R1,R2,R3,R4,R5);
+        endif;
+        
+        //Invalidate the resource table entry.
+        [PerProcTable + counter] = -1;
+        counter = counter + 2;
+    endwhile;
+
+    multipush(R1,R2,R3,R4,R5);
+    // Free the user area page by invoking the Release Page function.
+    R1 = 2;
+    R2 = userAreaPage;
+    call MOD_2;
+    multipop(R1,R2,R3,R4,R5);
+    return;
+endif;
+
+//EXIT_PROCESS
+//Terminate the process whose PID is provided
+if(functionNum == 3) then
+	alias currentPID R2;
+	alias counter R4;
+   	counter=0;
+   	if([PROCESS_TABLE+currentPID*16+9]!=9)then
+  		while(counter<16) do 
+     			if(([PROCESS_TABLE+counter*16+4]== WAIT_PROCESS) && ([PROCESS_TABLE+counter*16+5]==currentPID)) then
+        			[PROCESS_TABLE+counter*16+4]=READY;
+    		 	endif;
+   			counter=counter+1;
+   		endwhile;
+
+  		counter=0;
+   		while(counter<16) do 
+     			if([PROCESS_TABLE+counter*16+2]==currentPID) then
+        			[PROCESS_TABLE+counter*16+2]=-1;
+     			endif;
+   			counter=counter+1;
+   		endwhile;
+   	endif;
+	multipush(R1,R2);
+	R1 = 4;
+	R2 = currentPID;
+	call MOD_1;
+	multipop(R1,R2);
+	multipush(R1,R2);
+	R1 = 2;
+	R2 = currentPID;
+	call MOD_1;
+	multipop(R1,R2);
+	[PROCESS_TABLE + currentPID * 16 + 4] = TERMINATED;
+	return;
+endif;
+
+//FREE_PAGE_TABLE
+//Free the page table entry and the used pages. Disk map table entries are also freed
+if(functionNum == 4) then
+	alias currentPID R2;
+	[PAGE_TABLE_BASE + currentPID * 20 + 0] = -1;
+	[PAGE_TABLE_BASE + currentPID * 20 + 1] = "0000";
+	[PAGE_TABLE_BASE + currentPID * 20 + 2] = -1;
+	[PAGE_TABLE_BASE + currentPID * 20 + 3] = "0000";
+	alias count R3;
+	count = 2;
+	while(count < 10) do
+		if([PAGE_TABLE_BASE + currentPID * 20 + 2 * count] != -1) then
+			multipush(R1,R2,R3);
+			R1 = 2;
+			R2 = [PAGE_TABLE_BASE + currentPID * 20 + 2 * count];	
+			call MOD_2;
+			multipop(R1,R2,R3);
+	    endif;
+		count = count + 1;
+	endwhile;
+	count = 2;
+	while(count < 10) do
+		if((count < 4 || count > 7) && ([DISK_MAP_TABLE + currentPID * 10 + count] > 0)) then
+			multipush(R1,R2,R3);
+			functionNum = 4;
+			R2 = [DISK_MAP_TABLE + currentPID * 10 + count];
+			R3 = currentPID;
+			call MOD_2;
+			multipop(R1,R2,R3);		
+		endif;
+		[DISK_MAP_TABLE + currentPID * 10 + count] = -1;
+		count = count + 1;
+	endwhile;
+	return;
+endif;
+
+//KILL_ALL
+if(functionNum == 5) then
+	//to be done
+	return;
+endif;
+
+
+

@@ -1,0 +1,15 @@
+int main()
+{
+decl
+    int temp,num,retval;
+enddecl
+begin
+    retval = exposcall("Fork");
+    if(retval==0) then
+    	num = exposcall("Exec","even100.xsm");
+    else
+	num = exposcall("Exec","odd100.xsm");
+    endif;
+    return 0;
+end
+}

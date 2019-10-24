@@ -1,0 +1,65 @@
+alias functionNum R1;
+
+//DISK_LOAD
+//Loads the contents of the disk block to the page. A valid PID as input is assumed.
+if(functionNum == 2) then
+	alias currentPID R2;
+	alias pageNo R3;
+	alias blockNo R4;
+	multipush(R1,R2,R3,R4);
+	R1 = 3;
+	R2 = currentPID;
+	call MOD_0;
+	multipop(R1,R2,R3,R4);	
+	[DISK_STATUS_TABLE+1]=0;
+	[DISK_STATUS_TABLE+2]=pageNo;
+	[DISK_STATUS_TABLE+3]=blockNo;
+	[DISK_STATUS_TABLE+4]=currentPID;
+	load(pageNo,blockNo);
+	[PROCESS_TABLE+(currentPID)*16+4]=WAIT_DISK;
+	multipush(R1,R2,R3,R4);
+	call MOD_5;
+	multipop(R1,R2,R3,R4);
+	return;
+endif;
+
+//Terminal Write
+//Reads a word from the Memory address provided to the terminal. Assumes a valid PID is given.
+if(functionNum == 3) then
+	alias currentPID R2;
+	alias word R3;
+	multipush(R1,R2,R3);
+	R1 = 8;
+	R2 = currentPID;
+	call MOD_0;
+	multipop(R1,R2,R3);
+	print word;
+	multipush(R1,R2,R3);
+	R1 = 9;
+	R2 = currentPID;
+	call MOD_0;
+	multipop(R1,R2,R3);
+	return;
+endif;
+
+//Terminal Read
+//Reads a word from the terminal and stores it to the memory address provided. Assumes a valid PID is given.
+if(functionNum == 4) then
+	alias currentPID R2;
+	alias address R3;
+	multipush(R1,R2,R3);
+	R1 = 8;
+	R2 = currentPID;
+	call MOD_0;
+	multipop(R1,R2,R3);
+	read;
+	[PROCESS_TABLE+(currentPID*16)+4]=WAIT_TERMINAL;
+	multipush(R1,R2,R3);
+	call MOD_5;
+	multipop(R1,R2,R3);
+	alias physicalAddress R4;
+   	physicalAddress = [PTBR+2*(address/512)]*512+(address%512);
+   	[physicalAddress]=[PROCESS_TABLE+(currentPID*16)+8];
+	return;
+endif;
+

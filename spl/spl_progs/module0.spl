@@ -1,0 +1,103 @@
+alias functionNum R1;
+alias returnValue R0;
+
+//Acquire Disk
+//Locks the disk device. Assumes that a valid PID is given as input
+if(functionNum == 3) then
+	alias currentPID R2;
+	while([DISK_STATUS_TABLE] == 1) do
+		[PROCESS_TABLE + currentPID * 16 +4]=WAIT_DISK;
+		call MOD_5;
+	endwhile;
+	[DISK_STATUS_TABLE + 4] = currentPID;
+	[DISK_STATUS_TABLE + 0] = 1;
+	return;
+endif;
+
+//Acquire semaphore
+//Acquires a semaphore and returns its semaphore number. Assumes a valid PID is given as input. Returns -1 upon failure
+if(functionNum == 6) then
+	alias currentPID R2;
+	alias counter R3;
+	counter = 0;
+	while(counter < MAX_SEM_COUNT) do
+		if([SEMAPHORE_TABLE + 4*counter + 1] == 0) then
+			break;
+		endif;
+		counter = counter+1;	
+	endwhile;
+
+	if(counter == MAX_SEM_COUNT) then
+		R0 = -1;
+		return;
+	endif;
+
+	[SEMAPHORE_TABLE + 4*counter + 1] = 1;
+	[SEMAPHORE_TABLE + 4*counter + 0] = -1;
+
+	R0 = counter;
+	return;
+endif;
+
+
+//Release semaphore
+//Releases a semaphore. Assumes a valid PID and semaphore table index are given as input
+if(functionNum == 7) then
+	alias semTableIndex R2;
+	alias currentPID R3;
+	alias counter R4;
+	
+	if([SEMAPHORE_TABLE + 4*semTableIndex] == currentPID) then
+		[SEMAPHORE_TABLE + 4*semTableIndex] = -1;
+		counter = 0;
+		while(counter < MAX_PROC_NUM) do
+			if([PROCESS_TABLE + 16*counter + 4] == WAIT_SEMAPHORE && [PROCESS_TABLE + 16*counter + 5] == semTableIndex) then
+				[PROCESS_TABLE + 16*counter +4] =READY;			
+			endif;
+			counter = counter +1 ;
+		endwhile;
+
+	endif;
+
+	[SEMAPHORE_TABLE + 4*semTableIndex +1] = [SEMAPHORE_TABLE + 4*semTableIndex +1]-1;
+	return;
+	
+endif;
+
+
+//Acquire Terminal
+//Locks the terminal device. Assumes a valid PID is given as input
+if(functionNum == 8) then
+	alias currentPID R2;
+	while([TERMINAL_STATUS_TABLE] == 1) do
+		[PROCESS_TABLE + currentPID * 16 + 4] =  WAIT_TERMINAL;
+		multipush(R1,R2);
+		call MOD_5;
+		multipop(R1,R2);
+	endwhile;
+	[TERMINAL_STATUS_TABLE + 0] = 1;
+	[TERMINAL_STATUS_TABLE + 1] = currentPID;
+	return;
+endif;
+
+//Release Terminal
+//Frees the terminal device. Assumes a valid PID is given as input
+if(functionNum == 9) then
+	alias currentPID R2;
+	if(currentPID != [TERMINAL_STATUS_TABLE + 1]) then
+		returnValue = -1;
+		return;
+	endif;
+	[TERMINAL_STATUS_TABLE] = 0;
+	alias counter R3;
+	counter = 0;
+	while(counter <= 15) do
+		if([PROCESS_TABLE + counter * 16 + 4] == WAIT_TERMINAL) then
+			[PROCESS_TABLE + counter * 16 + 4] = READY;
+		endif;
+		counter = counter + 1;
+	endwhile;
+	returnValue = 0;
+	return;
+endif;
+

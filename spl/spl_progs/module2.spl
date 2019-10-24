@@ -1,0 +1,91 @@
+alias functionNum R1;
+alias returnVal R0;
+
+//GET_FREE_PAGE
+//Returns the page number of a free page
+if(functionNum == 1) then
+	[SYSTEM_STATUS_TABLE + 3] = [SYSTEM_STATUS_TABLE + 3] + 1;
+	while([SYSTEM_STATUS_TABLE + 2] == 0) do
+		[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16 + 4] = WAIT_MEM;
+		multipush(R1);
+		call MOD_5;
+		multipop(R1);
+	endwhile;
+	[SYSTEM_STATUS_TABLE + 3] = [SYSTEM_STATUS_TABLE + 3] - 1;
+	[SYSTEM_STATUS_TABLE + 2] = [SYSTEM_STATUS_TABLE + 2] - 1;
+	alias count R0;
+	count = 0;
+	[MEMORY_FREE_LIST + 0] = 1;
+	while(count < 128) do
+	   if([MEMORY_FREE_LIST + count] == 0) then
+		 [MEMORY_FREE_LIST + count] = 1;
+		 break;
+	    endif;
+	    count = count + 1;       
+	endwhile;
+	return;
+endif;
+
+//RELEASE_PAGE
+//Decrements the entry corresponding to page in the memory free list
+if(functionNum == 2) then
+	alias page R2;
+	[MEMORY_FREE_LIST + page] = [MEMORY_FREE_LIST + page] - 1;
+	if([MEMORY_FREE_LIST + page] == 0) then
+		[SYSTEM_STATUS_TABLE+2]= [SYSTEM_STATUS_TABLE+2]+1;
+	endif;
+	alias count R3;
+	count = 0;
+	while(count < 16) do
+		if([PROCESS_TABLE + count * 16 + 4] == WAIT_MEM) then
+			[PROCESS_TABLE + count * 16 + 4] = READY;
+		endif;
+		count = count + 1;
+	endwhile;
+	return;
+endif;
+
+//RELEASE_BLOCK
+//Decrements the entry corresponding to the disk block in the disk free list
+if(functionNum == 4) then
+	alias block R2;
+	alias currentPID R3;
+	[DISK_FREE_LIST + block] = [DISK_FREE_LIST + block] - 1;
+	return;
+endif;
+
+//GET_CODE_PAGE
+//Loads a single code page to memory given the block number of the page in the disk. It takes the block number and PID as an argument.
+if(functionNum == 5) then 
+
+	alias counter R3;
+	alias blockNum R2; 
+	counter = 0;
+	while(counter < MAX_PROC_NUM) do
+		alias counter2 R5;
+		counter2 = 2;
+		while(counter2 < 10) do
+			if([DISK_MAP_TABLE + counter*10 + counter2] == blockNum && [PAGE_TABLE_BASE+counter*20+2*counter2] !=-1) then
+				returnVal = [PAGE_TABLE_BASE+counter*20+2*counter2];
+				[MEMORY_FREE_LIST+returnVal]=[MEMORY_FREE_LIST+returnVal]+1;
+				return;
+			endif;
+			counter2 = counter2+1;	
+		endwhile;
+		counter = counter +1;
+	endwhile;
+
+	multipush(R1,R2,R3);
+	R1 = 1;
+	call MOD_2;
+	multipop(R1,R2,R3);
+	multipush(R0,R1,R2,R3);
+	R1 = 2;
+	R3 = R0;	
+	R4 = R2;
+	R2 = [SYSTEM_STATUS_TABLE+1];
+	call MOD_4;
+	multipop(R0,R1,R2,R3);
+	return;
+endif;
+

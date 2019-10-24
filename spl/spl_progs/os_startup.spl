@@ -1,35 +1,18 @@
-//timer interupt
-loadi(4,17);
-loadi(5,18);
-
-//library
-loadi(63,13);
-loadi(64,14);
-
-//int10
-loadi(22,35);
-loadi(23,36);
-
-//int7
-loadi(16,29);
-loadi(17,30);
-
-//exception handler
-loadi(2,15);
-loadi(3,16);
+//os_startup code
 
 //idle code
 loadi(69,11);
 loadi(70,12);
 
-//module 7
+//module 7(boot module)
 loadi(54,67);
 loadi(55,68);
+
 
 SP = 82*512 -1;
 call BOOT_MODULE;
 
-//For idle process
+//Initializing page table for idle process
 PTBR = PAGE_TABLE_BASE;
 PTLR = 10;
 
@@ -56,22 +39,24 @@ PTLR = 10;
 [PTBR+15] = "0000";
 
 //Stack
-[PTBR+16] = 76;
+[PTBR+16] = 81;
 [PTBR+17] = "0110";
 [PTBR+18] = -1;
 [PTBR+19] = "0000";
 
-[76*512] = [69*512 +1];
+[81*512] = [69*512 +1];
 
 [PROCESS_TABLE + 15] = 10;
 [PROCESS_TABLE + 14] = PAGE_TABLE_BASE;
 [PROCESS_TABLE + 13] = 8*512;
 [PROCESS_TABLE + 12] = 0;
-[PROCESS_TABLE + 11] = 77;
+[PROCESS_TABLE + 11] = 82;
 [PROCESS_TABLE + 4] = 2;
 [PROCESS_TABLE + 1] = 0;
 
 SP = 8*512;
+
+PTBR = PAGE_TABLE_BASE;
 [SYSTEM_STATUS_TABLE + 1] = 0;
 
 ireturn;

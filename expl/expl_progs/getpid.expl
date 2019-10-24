@@ -1,0 +1,15 @@
+int main()
+{
+decl
+    int temp,num,retval1,retval2,retval3;
+    string file;
+enddecl
+begin
+    retval1 =exposcall("Fork");
+    retval2 =exposcall("Fork");
+    retval3 =exposcall("Fork");
+
+    temp =exposcall("Exec","pid.xsm");
+    return 0;
+end
+}
