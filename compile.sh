@@ -27,13 +27,8 @@ cd spl
 cd ../expl
 ./expl expl_progs/shellversion2.expl
 
-./expl expl_progs/rw.expl
-
-./expl expl_progs/parent.expl
-./expl expl_progs/child.expl
-
-./expl expl_progs/seqmerge.expl
-./expl expl_progs/conmerge.expl
+./expl expl_progs/fileC.expl
+./expl expl_progs/fileD.expl
 
 cd ../xfs-interface
 ./xfs-interface
