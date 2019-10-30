@@ -1,0 +1,101 @@
+//Open and Close has system call numbers 2 and 3 respectively.
+
+alias userSP R1;
+userSP = SP;
+
+alias currentPID R2;
+currentPID = [SYSTEM_STATUS_TABLE+1];
+
+alias process_table R3;
+process_table = PROCESS_TABLE + currentPID*16;
+
+[process_table + 13] = SP;
+SP = [process_table + 11]*512 - 1;
+
+alias syscall R4;
+syscall = [[PTBR + 2*((userSP-5)/512)]*512 + (userSP-5)%512];
+
+[process_table + 9] = syscall;
+
+alias retVal R5;
+retVal = [[PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512];
+
+//Open
+if(syscall == 2) then
+	alias fileName R6;
+	fileName = [[PTBR + 2*((userSP-4)/512)]*512 + (userSP-4)%512];
+
+	alias counter R7;
+	alias userpage R8;
+	
+	userpage = [process_table + 11];
+	counter = 496;
+
+	while(counter < 512) do
+		if([userpage*512 + counter] == -1) then
+			break;
+		endif;
+		counter = counter + 1;
+	endwhile;
+
+	if(counter == 512) then
+		retVal = -3;
+		[process_table + 9] = 0;
+		SP = [process_table + 13];
+		ireturn;
+	endif;
+
+	multipush(R1,R2,R3,R4,R5,R6,R7,R8);
+	R1 = 3;
+	R2 = fileName;
+	call MOD_3;
+	multipop(R1,R2,R3,R4,R5,R6,R7,R8);
+
+	if(R0 == -1 || R0 == -1) then
+		retVal = R0;
+		[process_table + 9] = 0;
+		SP = [process_table + 13];
+		ireturn;
+	endif;
+
+	[userpage*512 + counter + 0] = FILE;
+	[userpage*512 + counter + 1] = R0;
+
+	retVal = (counter-496)/2;
+	[process_table + 9] = 0;
+	SP = [process_table + 13];
+	ireturn;	
+
+endif;
+
+//Close
+if(syscall == 3) then
+	alias fileDesc R6;
+	fileDesc = [[PTBR + 2*((userSP-4)/512)]*512 + (userSP-4)%512];
+	
+	alias userpage R7;
+	userpage = [process_table + 11];
+
+	if(fileDesc<0 || fileDesc>7 || [userpage*512 + 496 + 2*fileDesc]!=FILE) then
+		retVal = -1;
+		[process_table + 9] = 0;
+		SP = [process_table + 13];
+		ireturn;
+	endif;
+
+	alias fileIndex R8;
+	fileIndex = [userpage*512 + 496 + 2*fileDesc + 1];
+
+	multipush(R1,R2,R3,R4,R5,R6,R7,R8);
+	R1 = 4;
+	R2 = fileIndex;
+	call MOD_3;
+	multipop(R1,R2,R3,R4,R5,R6,R7,R8);
+	
+	[userpage*512 + 496 + 2*fileDesc] = -1;
+
+	retVal = 0;
+	[process_table + 9] = 0;
+	SP = [process_table + 13];
+	ireturn;
+endif;

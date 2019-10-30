@@ -1,0 +1,36 @@
+alias functionNum R1;
+alias returnValue R0;
+
+//Buffered read
+//The disk page provided is loaded to the corresponding buffer. The word present at the offset position of the buffer is copied to the Memory address provided as input. Buffer management is handled by this function internally.
+if(functionNum == 2) then
+	alias diskBlock R2;
+	alias offset R3;
+	alias memAddr R4;
+
+endif;
+
+//Open
+//Locates the file in the inode table and makes an entry in the Open File Table. Returns the Open File Table index or an error code if file does not exist or the table is full. On a successfull open, the file status table entry of the file is incremented.
+if(functionNum == 3) then
+	alias fileName R2;
+
+endif;
+
+//Close
+//Closes the open instance of a file. Assumes a valid Opne File Table index is given as input.
+if(functionNum == 4) then
+	alias fileIndex R2;
+	
+	alias inodeIndex R3;
+	inodeIndex = [OPEN_FILE_TABLE + 4*fileIndex];
+
+	[OPEN_FILE_TABLE + 4*fileIndex + 1] = [OPEN_FILE_TABLE + 4*fileIndex + 1] - 1;
+
+	if([OPEN_FILE_TABLE + 4*fileIndex + 1] == 0) then
+		[OPEN_FILE_TABLE + 4*fileIndex + 0] = -1;
+		[OPEN_FILE_TABLE + 4*fileIndex + 1] = -1;
+		[OPEN_FILE_TABLE + 4*fileIndex + 2] = -1;
+	endif;
+	return;
+endif;

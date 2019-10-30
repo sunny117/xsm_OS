@@ -7,6 +7,7 @@ cd spl
 ./spl spl_progs/disk_interrupt_handler.spl
 ./spl spl_progs/console_interrupt_handler.spl
 ./spl spl_progs/INT4.spl
+./spl spl_progs/INT5.spl
 ./spl spl_progs/INT6.spl
 ./spl spl_progs/INT7.spl
 ./spl spl_progs/INT8.spl
@@ -19,6 +20,7 @@ cd spl
 ./spl spl_progs/module0.spl
 ./spl spl_progs/module1.spl
 ./spl spl_progs/module2.spl
+./spl spl_progs/module3.spl
 ./spl spl_progs/module4.spl
 ./spl spl_progs/module5.spl
 ./spl spl_progs/module7.spl

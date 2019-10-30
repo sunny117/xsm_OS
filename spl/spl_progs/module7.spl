@@ -38,6 +38,10 @@ loadi(9,22);
 loadi(10,23);
 loadi(11,24);
 
+//int5(Seek, Open, Close)
+loadi(12,25);
+loadi(13,26);
+
 //int6(Read)
 loadi(14,27);
 loadi(15,28);
@@ -85,6 +89,10 @@ loadi(43,56);
 //module 2(Memeory Manager)
 loadi(44,57);
 loadi(45,58);
+
+//module 3(File Manager)
+loadi(46,59);
+loadi(47,60);
 
 //module 4(Device Manager)
 loadi(48,61);
@@ -169,7 +177,7 @@ endwhile;
 i=0;
 while(i < MAX_SEM_COUNT) do
 	[SEMAPHORE_TABLE + i*4 + 0] = -1;
-	[SEMAPHORE_TABLE + i*4 + 1] = 0;
+	[SEMAPHORE_TABLE + i*4 + 1] =  0;
 	i = i+1;
 endwhile;
 
@@ -191,5 +199,15 @@ while(i < MAX_BUFFER) do
 	[BUFFER_TABLE + i*4 + 2] = -1;
 	i = i+1;
 endwhile;
+
+//Initializing the open file table
+//INODE INDEX field to -1 and OPEN INSTANCE COUNT to 0
+i=0;
+while(i < MAX_OPENFILE_NUM) do
+	[OPEN_FILE_TABLE + i*4 + 0] = -1;
+	[OPEN_FILE_TABLE + i*4 + 1] =  0;	
+	i = i+1;
+endwhile;
+
 return;
 

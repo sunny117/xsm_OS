@@ -112,6 +112,12 @@ else
             //if the resource held is a semaphore update the corresponding count field in the semaphore table
             [SEMAPHORE_TABLE + 4 * [parentResTable + counter + 1] + 1] = [SEMAPHORE_TABLE + 4 * [parentResTable + counter + 1] + 1] + 1;
         endif;
+
+	if([parentResTable + counter] == FILE) then
+            //if the resource held is a file update the corresponding count field in the file table
+            [OPEN_FILE_TABLE + 4 * [parentResTable + counter + 1] + 1] = [OPEN_FILE_TABLE + 4 * [parentResTable + counter + 1] + 1] + 1;
+        endif;
+	
         counter = counter + 2;
     endwhile;
 

@@ -50,7 +50,14 @@ if(functionNum == 2) then
             call MOD_0;
             multipop(R1,R2,R3,R4,R5);
         endif;
-        
+	//if the resource is a file release the file by calling close()
+        if ([PerProcTable + counter] == FILE && [PerProcTable + counter+1]!=-1) then
+            multipush(R1,R2,R3,R4,R5);
+            R1 = 4;
+            R2 = [PerProcTable + counter + 1];
+            call MOD_3;
+            multipop(R1,R2,R3,R4,R5);
+        endif;
         //Invalidate the resource table entry.
         [PerProcTable + counter] = -1;
         counter = counter + 2;
