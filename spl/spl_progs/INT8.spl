@@ -114,10 +114,9 @@ else
         endif;
 
 	if([parentResTable + counter] == FILE) then
-            //if the resource held is a file update the corresponding count field in the file table
-            [OPEN_FILE_TABLE + 4 * [parentResTable + counter + 1] + 1] = [OPEN_FILE_TABLE + 4 * [parentResTable + counter + 1] + 1] + 1;
-        endif;
-	
+		    //if the resource held is a file update the corresponding count field in the file table
+		    [OPEN_FILE_TABLE + 4 * [parentResTable + counter + 1] + 1] = [OPEN_FILE_TABLE + 4 * [parentResTable + counter + 1] + 1] + 1;
+		endif;
         counter = counter + 2;
     endwhile;
 
@@ -133,18 +132,14 @@ else
 	
 	//*Initializing page table of child process
 
-	//library pages
-	[childPTBR + 0] = [PTBR + 0];
-	[childPTBR + 1] = [PTBR + 1];
-	[childPTBR + 2] = [PTBR + 2];
-	[childPTBR + 3] = [PTBR + 3];
-
-	//heap pages
-	[childPTBR + 4] = [PTBR + 4];
-	[childPTBR + 5] = [PTBR + 5];
-	[childPTBR + 6] = [PTBR + 6];
-	[childPTBR + 7] = [PTBR + 7];
-
+	//library pages 0,1,2,3
+	//heap pages 4,5,6,7
+	counter = 0;
+	while(counter < 8) do
+		[childPTBR + counter] = [PTBR + counter];
+		counter = counter + 1;
+	endwhile;
+	
 	//incrementing the memory free list as child is sharing it with the parent
 	[MEMORY_FREE_LIST + [childPTBR + 0]] = [MEMORY_FREE_LIST + [childPTBR + 0]] + 1;
 	[MEMORY_FREE_LIST + [childPTBR + 2]] = [MEMORY_FREE_LIST + [childPTBR + 2]] + 1;

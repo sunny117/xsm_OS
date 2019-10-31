@@ -29,8 +29,8 @@ cd spl
 cd ../expl
 ./expl expl_progs/shellversion2.expl
 
-./expl expl_progs/fileC.expl
-./expl expl_progs/fileD.expl
+./expl expl_progs/readcon.expl
+./expl expl_progs/lseek.expl
 
 cd ../xfs-interface
 ./xfs-interface

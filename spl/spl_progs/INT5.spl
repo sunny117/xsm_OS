@@ -18,7 +18,7 @@ syscall = [[PTBR + 2*((userSP-5)/512)]*512 + (userSP-5)%512];
 [process_table + 9] = syscall;
 
 alias retVal R5;
-retVal = [[PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512];
+retVal = [PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512;
 
 //Open
 if(syscall == 2) then
@@ -35,11 +35,11 @@ if(syscall == 2) then
 		if([userpage*512 + counter] == -1) then
 			break;
 		endif;
-		counter = counter + 1;
+		counter = counter + 2;
 	endwhile;
 
 	if(counter == 512) then
-		retVal = -3;
+		[retVal] = -3;
 		[process_table + 9] = 0;
 		SP = [process_table + 13];
 		ireturn;
@@ -51,8 +51,8 @@ if(syscall == 2) then
 	call MOD_3;
 	multipop(R1,R2,R3,R4,R5,R6,R7,R8);
 
-	if(R0 == -1 || R0 == -1) then
-		retVal = R0;
+	if(R0 == -1 || R0 == -2) then
+		[retVal] = R0;
 		[process_table + 9] = 0;
 		SP = [process_table + 13];
 		ireturn;
@@ -61,7 +61,7 @@ if(syscall == 2) then
 	[userpage*512 + counter + 0] = FILE;
 	[userpage*512 + counter + 1] = R0;
 
-	retVal = (counter-496)/2;
+	[retVal] = (counter-496)/2;
 	[process_table + 9] = 0;
 	SP = [process_table + 13];
 	ireturn;	
@@ -77,7 +77,7 @@ if(syscall == 3) then
 	userpage = [process_table + 11];
 
 	if(fileDesc<0 || fileDesc>7 || [userpage*512 + 496 + 2*fileDesc]!=FILE) then
-		retVal = -1;
+		[retVal] = -1;
 		[process_table + 9] = 0;
 		SP = [process_table + 13];
 		ireturn;
@@ -94,7 +94,7 @@ if(syscall == 3) then
 	
 	[userpage*512 + 496 + 2*fileDesc] = -1;
 
-	retVal = 0;
+	[retVal] = 0;
 	[process_table + 9] = 0;
 	SP = [process_table + 13];
 	ireturn;

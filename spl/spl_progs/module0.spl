@@ -71,7 +71,7 @@ if(functionNum == 4) then
 		call MOD_5;
 		multipop(R1,R2,R3);
 	endwhile;
-	if([FILE_STATUS_TABLE + 4*inodeindex + 1] == -1) then
+	if([INODE_TABLE + 16*inodeindex] == -1) then
 			returnValue = -1;
 			return;
 	endif;

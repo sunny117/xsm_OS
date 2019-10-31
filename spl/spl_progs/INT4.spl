@@ -11,7 +11,7 @@ alias processtable R3;
 processtable = PROCESS_TABLE+currentPID*16;
 
 alias returnVal R4;
-returnVal = [[PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512];
+returnVal = [PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512;
 
 [processtable +13] = SP;
 SP = [processtable + 11]*512 - 1;
@@ -28,7 +28,7 @@ if(syscall == 1) then
 	counter = 0;
 	while(counter<60) do
 		if([INODE_TABLE + counter*16 + 1] == fileName && [INODE_TABLE + counter*16 + 0] == DATA) then
-			returnVal = 0;
+			[returnVal] = 0;
 			[processtable + 9] = 0;
 			SP = [processtable +13];
 			ireturn;
@@ -45,7 +45,7 @@ if(syscall == 1) then
 	endwhile;
 	
 	if(counter == 60) then
-		returnVal = -1;
+		[returnVal] = -1;
 		[processtable + 9] = 0;
 		SP = [processtable +13];
 		ireturn;
@@ -88,14 +88,14 @@ if(syscall == 4) then
 	endwhile;
 	
 	if(counter == 60) then
-		returnVal = 0;
+		[returnVal] = 0;
 		[processtable + 9] = 0;
 		SP = [processtable +13];
 		ireturn;
 	endif;
 	
 	if([INODE_TABLE + counter*16 + 0] != DATA) then
-		returnVal = -1;
+		[returnVal] = -1;
 		[processtable + 9] = 0;
 		SP = [processtable +13];
 		ireturn;
@@ -103,7 +103,7 @@ if(syscall == 4) then
 
 	if([INODE_TABLE + counter*16 + 4] == 0) then
 		if([processtable + 3] != 1 && [processtable + 3] != [INODE_TABLE + counter*16 + 3]) then
-			returnVal = -1;
+			[returnVal] = -1;
 			[processtable + 9] = 0;
 			SP = [processtable +13];
 			ireturn;
@@ -124,7 +124,7 @@ if(syscall == 4) then
 		R3 = [SYSTEM_STATUS_TABLE + 1];
 		call MOD_0;
 		multipop(R1,R2,R3,R4,R5,R6,R7);
-		returnVal = -2;
+		[returnVal] = -2;
 		[processtable + 9] = 0;
 		SP = [processtable +13];
 		ireturn;
@@ -166,7 +166,7 @@ if(syscall == 4) then
     multipop(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9);
 endif;
 
-returnVal = 0;
+[returnVal] = 0;
 [processtable + 9] = 0;
 SP = [processtable +13];
 ireturn;
