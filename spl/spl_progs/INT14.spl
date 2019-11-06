@@ -27,6 +27,7 @@ if(syscall == 19) then
 	alias Semindex R5;
 	Semindex = [[PROCESS_TABLE + 16 * currentPID + 11] * 512 + 512 - 16 + 2 * semDesc + 1];
 	// while the semaphore is locked by a process other than the current process do    /* Check the Locking PID field in the Semaphore table */
+
 	while ([SEMAPHORE_TABLE + 4 * Semindex] != -1 && [SEMAPHORE_TABLE + 4 * Semindex] != currentPID) do
 		// Change the state of the current process to (WAIT_SEMAPHORE, Semaphore table index of the locked semaphore).
 		[PROCESS_TABLE + 16 * currentPID + 4] = WAIT_SEMAPHORE;

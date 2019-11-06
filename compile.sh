@@ -37,4 +37,4 @@ cd ../xfs-interface
 
 
 cd ../xsm
-./xsm
+./xsm --debug

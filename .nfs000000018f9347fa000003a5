@@ -29,7 +29,6 @@ cd spl
 cd ../expl
 ./expl expl_progs/shellversion2.expl
 
-./expl expl_progs/
 ./expl expl_progs/readcon.expl
 ./expl expl_progs/lseek.expl
 

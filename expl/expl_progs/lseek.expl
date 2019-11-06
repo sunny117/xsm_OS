@@ -8,17 +8,22 @@ enddecl
 int main()
 {
 begin
+	
     temp = exposcall("Read",-1,filename);
     filedis = exposcall("Open", filename);
     semid = exposcall("Semget");
-
     pid = exposcall("Fork");
+
+
     a = 0;
     data = -1;
     if(pid > 0) then
         while(a != -2)  do
+			
             temp = exposcall("SemLock", semid);
+write("1");
             a = exposcall("Read",filedis,data);
+write("2");
             if(a!=-2) then
             	temp = exposcall("Write",-2,data);	
 	    endif;
@@ -30,7 +35,9 @@ begin
     else
         while(a != -2)  do
             temp = exposcall("SemLock", semid);
+write("1");
             a = exposcall("Read",filedis,data);
+write("2");
 	    if(a!=-2) then
             	temp = exposcall("Write",-2,data);
 	    endif;

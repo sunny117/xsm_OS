@@ -65,7 +65,7 @@ if(functionNum == 4) then
 	while([FILE_STATUS_TABLE + 4*inodeindex] != -1 ) do
 		[PROCESS_TABLE + 16 * currentPID + 4] = WAIT_FILE;
 		[PROCESS_TABLE + 16 * currentPID + 5] = inodeindex;
-		
+		breakpoint;
 		// Invoke the switch_context() function in the Scheduler Module.
 		multipush(R1,R2,R3);
 		call MOD_5;
