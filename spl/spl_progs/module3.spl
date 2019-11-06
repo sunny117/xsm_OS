@@ -122,7 +122,6 @@ if(functionNum == 3) then
 	endwhile;
 
 	if(counter == MAX_FILE_NUM) then
-		
 		returnValue = -1;
 		return;
 	endif;
@@ -138,7 +137,6 @@ if(functionNum == 3) then
 	multipop(R1,R2,R3,R4);
 
 	if(R0 == -1) then
-		print "HI";
 		returnValue = -1;
 		return;
 	endif;
@@ -178,27 +176,33 @@ if(functionNum == 3) then
 	alias fileIndex R5;
 	fileIndex = counter;
 
-	if([INODE_TABLE + 16*inodeIndex + 1] == "root") then
-		[OPEN_FILE_TABLE + 4*fileIndex] = INODE_ROOT;
-	else
-		[OPEN_FILE_TABLE + 4*fileIndex] = inodeIndex;
+	alias openfileTable R6;
+	openfileTable = OPEN_FILE_TABLE + 4*fileIndex;
 
-		if([FILE_STATUS_TABLE + 4*inodeIndex + 1] == -1) then
-			[FILE_STATUS_TABLE + 4*inodeIndex + 1] = 1;
+	alias filestatusTable R7;
+	filestatusTable = FILE_STATUS_TABLE + 4*inodeIndex;
+
+	if([INODE_TABLE + 16*inodeIndex + 1] == "root") then
+		[openfileTable] = INODE_ROOT;
+	else
+		[openfileTable] = inodeIndex;
+
+		if([filestatusTable + 1] == -1) then
+			[filestatusTable + 1] = 1;
 		else
-			[FILE_STATUS_TABLE + 4*inodeIndex + 1] = [FILE_STATUS_TABLE + 4*inodeIndex + 1] + 1;
+			[filestatusTable + 1] = [filestatusTable + 1] + 1;
 		endif;
 	endif;
 
-	[OPEN_FILE_TABLE + 4*fileIndex + 1] = 1;
-	[OPEN_FILE_TABLE + 4*fileIndex + 2] = 0;
+	[openfileTable + 1] = 1;
+	[openfileTable + 2] = 0;
 
-	multipush(R1,R2,R3,R4,R5);
+	multipush(R1,R2,R3,R4,R5,R6,R7);
 	R1 = 5;
 	R2 = inodeIndex;
 	R3 = [SYSTEM_STATUS_TABLE + 1];
 	call MOD_0;
-	multipop(R1,R2,R3,R4,R5);
+	multipop(R1,R2,R3,R4,R5,R6,R7);
 	
 	returnValue = fileIndex;
 	return;
@@ -208,25 +212,31 @@ endif;
 //Closes the open instance of a file. Assumes a valid Opne File Table index is given as input.
 if(functionNum == 4) then
 	alias fileIndex R2;
-	alias inodeIndex R3;
+	
+	alias openfileTable R3;
+	openfileTable = OPEN_FILE_TABLE + 4*fileIndex;
 
-	inodeIndex = [OPEN_FILE_TABLE + 4*fileIndex];
+	alias inodeIndex R4;
+	inodeIndex = [openfileTable];
 
-	[OPEN_FILE_TABLE + 4*fileIndex + 1] = [OPEN_FILE_TABLE + 4*fileIndex + 1] - 1;
+	alias filestatusTable R5;
+	filestatusTable = FILE_STATUS_TABLE + 4*inodeIndex;
+	
+	[openfileTable + 1] = [openfileTable + 1] - 1;
 
-	if([OPEN_FILE_TABLE + 4*fileIndex + 1] == 0) then
+	if([openfileTable + 1] == 0) then
 
-		[OPEN_FILE_TABLE + 4*fileIndex + 0] = -1;
-		[OPEN_FILE_TABLE + 4*fileIndex + 1] = -1;
-		[OPEN_FILE_TABLE + 4*fileIndex + 2] = -1;
-		[OPEN_FILE_TABLE + 4*fileIndex + 2] = -1;
+		[openfileTable + 0] = -1;
+		[openfileTable + 1] = -1;
+		[openfileTable + 2] = -1;
+		[openfileTable + 2] = -1;
 
 		if([INODE_TABLE + 16*inodeIndex + 1] != "root") then
-			[FILE_STATUS_TABLE + 4*inodeIndex + 1] = [FILE_STATUS_TABLE + 4*inodeIndex + 1] - 1;
+			[filestatusTable + 1] = [filestatusTable + 1] - 1;
 		endif;
 
-		if([FILE_STATUS_TABLE + 4*inodeIndex + 1] == 0) then
-			[FILE_STATUS_TABLE + 4*inodeIndex + 1] = -1;
+		if([filestatusTable + 1] == 0) then
+			[filestatusTable + 1] = -1;
 		endif;
 	endif;
 	return;

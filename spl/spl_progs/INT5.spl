@@ -46,11 +46,11 @@ if(syscall == 2) then
 		ireturn;
 	endif;
 
-	multipush(R1,R2,R3,R4,R5,R6,R7,R8);
+	backup;
 	R1 = 3;
 	R2 = fileName;
 	call MOD_3;
-	multipop(R1,R2,R3,R4,R5,R6,R7,R8);
+	restore;
 
 	if(R0 == -1 || R0 == -2) then
 		[retVal] = R0;
@@ -87,11 +87,11 @@ if(syscall == 3) then
 	alias fileIndex R8;
 	fileIndex = [userpage*512 + 496 + 2*fileDesc + 1];
 
-	multipush(R1,R2,R3,R4,R5,R6,R7,R8);
+	backup;
 	R1 = 4;
 	R2 = fileIndex;
 	call MOD_3;
-	multipop(R1,R2,R3,R4,R5,R6,R7,R8);
+	restore;
 	
 	[userpage*512 + 496 + 2*fileDesc] = -1;
 
@@ -110,7 +110,7 @@ if(syscall == 6) then
 	userpage = [process_table + 11];
 
 	if(fileDesc<0 || fileDesc>7 || [userpage*512 + 496 + 2*fileDesc]!=FILE) then
-		retVal = -1;
+		[retVal] = -1;
 		[process_table + 9] = 0;
 		SP = [process_table + 13];
 		ireturn;
@@ -122,22 +122,22 @@ if(syscall == 6) then
 	alias inodeIndex R9;
 	inodeIndex = [OPEN_FILE_TABLE + 4*fileIndex];
 
-	multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9);
+	backup;
 	R1 = 4;
 	R2 = inodeIndex;
 	R3 = [SYSTEM_STATUS_TABLE + 1];
 	call MOD_0;
-	multipop(R1,R2,R3,R4,R5,R6,R7,R8,R9);
+	restore;
 
 	if(R0 == -1) then
-		multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9);
+		backup;
 		R1 = 4;
 		R2 = inodeIndex;
 		R3 = [SYSTEM_STATUS_TABLE + 1];
 		call MOD_0;
-		multipop(R1,R2,R3,R4,R5,R6,R7,R8,R9);
+		restore;
 
-		retVal = -1;
+		[retVal] = -1;
 		[process_table + 9] = 0;
 		SP = [process_table + 13];
 		ireturn;
@@ -150,14 +150,14 @@ if(syscall == 6) then
 	offset = [[PTBR + 2*((userSP-3)/512)]*512 + (userSP-3)%512];
 
 	if(lseek + offset < 0) then
-		multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11);
+		backup;
 		R1 = 4;
 		R2 = inodeIndex;
 		R3 = [SYSTEM_STATUS_TABLE + 1];
 		call MOD_0;
-		multipop(R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11);
+		restore;
 
-		retVal = -2;
+		[retVal] = -2;
 		[process_table + 9] = 0;
 		SP = [process_table + 13];
 		ireturn;
@@ -173,14 +173,14 @@ if(syscall == 6) then
 		endif;
 	endif;
 
-	multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11);
+	backup;
 	R1 = 4;
 	R2 = inodeIndex;
 	R3 = [SYSTEM_STATUS_TABLE + 1];
 	call MOD_0;
-	multipop(R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11);
+	restore;
 
-	retVal = 0;
+	[retVal] = 0;
 	[process_table + 9] = 0;
 	SP = [process_table + 13];
 	ireturn;

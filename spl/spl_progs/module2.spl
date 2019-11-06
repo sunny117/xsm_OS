@@ -45,6 +45,26 @@ if(functionNum == 2) then
 	return;
 endif;
 
+//GET_FREE_BLOCK
+//Returns the block number of a free disk block. Returns -1 if disk is full.
+if(functionNum == 3) then
+	alias counter R0;
+	counter = DISK_FREE_AREA;
+	while(counter < DISK_SWAP_AREA) do
+		if([DISK_FREE_LIST + counter] == 0) then
+			[DISK_FREE_LIST + counter] = 1;
+			break;
+		endif;
+		counter = counter + 1;
+	endwhile;
+
+	if(counter == DISK_SWAP_AREA) then
+		counter = -1;
+	endif;
+	
+	return;
+endif;
+
 //RELEASE_BLOCK
 //Decrements the entry corresponding to the disk block in the disk free list
 if(functionNum == 4) then
