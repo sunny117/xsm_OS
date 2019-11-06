@@ -145,10 +145,47 @@ if(functionNum == 4) then
 endif;
 
 //KILL_ALL
+//kills all the processes except the current process, idle and init.
 if(functionNum == 5) then
-	//to be done
+	alias currentPID R2;
+	alias counter R3;
+	counter = 0;
+	while(counter < MAX_FILE_NUM) do
+		if([INODE_TABLE + 16*counter + 1] != -1) then
+			multipush(R1,R2,R3);
+			R1 = 4;
+			R2 = counter;
+			R3 = currentPID;
+			call MOD_0;
+			multipop(R1,R2,R3);
+		endif;
+		counter = counter + 1;
+	endwhile;
+
+	counter = 2;
+	while(counter < 15) do
+		if(counter != currentPID && [PROCESS_TABLE + counter*16 + 4]!=TERMINATED) then
+			multipush(R1,R2,R3);
+			R1 = 3;
+			R2 = counter;
+			call MOD_1;
+			multipop(R1,R2,R3);
+		endif;
+		counter = counter + 1;
+	endwhile;
+
+	counter = 0;
+	while(counter < MAX_FILE_NUM) do
+		if([INODE_TABLE + counter*16 + 1]!=-1) then
+			multipush(R1,R2,R3);
+			R1 = 5;
+			R2 = counter;
+			R3 = currentPID;
+			call MOD_0;
+			multipop(R1,R2,R3);
+		endif;
+		counter = counter + 1;
+	endwhile;
+
 	return;
 endif;
-
-
-

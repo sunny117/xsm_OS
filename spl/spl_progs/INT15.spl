@@ -19,6 +19,28 @@ if(currentPID != 1 && [PROCESS_TABLE + currentPID*16 + 3] != 1) then
 	ireturn;
 endif;
 
+multipush(R1,R2);
+R1 = 5;
+R2 = currentPID;
+call MOD_1;
+multipop(R1,R2);
+
+alias counter R7;
+counter = 0;
+
+while(counter < 4) do
+	if([BUFFER_TABLE + 4*counter + 1] == 1) then
+		multipush(R1,R2,R7);
+		R1 = 1;
+		R2 = currentPID;
+		R3 = (71 + counter);
+		R4 = [BUFFER_TABLE + 4*counter];
+		call MOD_4;
+		multipop(R1,R2,R7);
+	endif;
+	counter = counter + 1;
+endwhile;
+
 //storing back inode table into the disk
 multipush(R1,R2);
 R1 = 1;
@@ -56,4 +78,3 @@ call MOD_4;
 multipop(R1,R2);
 
 halt;
-
