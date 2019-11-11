@@ -29,8 +29,15 @@ cd spl
 cd ../expl
 ./expl expl_progs/shellversion2.expl
 
-./expl expl_progs/readcon.expl
-./expl expl_progs/lseek.expl
+./expl expl_progs/ls.expl
+./expl expl_progs/rm.expl
+./expl expl_progs/cp.expl
+./expl expl_progs/cat.expl
+
+./expl expl_progs/reverse1.expl
+./expl expl_progs/reverse2.expl
+./expl expl_progs/fwrite.expl
+./expl expl_progs/mergef.expl
 
 cd ../xfs-interface
 ./xfs-interface

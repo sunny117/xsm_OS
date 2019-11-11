@@ -1,6 +1,5 @@
 alias currentPID R1;
 currentPID = [SYSTEM_STATUS_TABLE + 1];
-breakpoint;
 multipush(BP);
 
 alias process_table_entry R2;

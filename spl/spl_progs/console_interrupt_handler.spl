@@ -3,16 +3,17 @@
 SP = [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 11] * 512 - 1;
 backup;
 
+[TERMINAL_STATUS_TABLE] = 0;
+
 alias reqPID R2;
 reqPID = [TERMINAL_STATUS_TABLE+1];
-[PROCESS_TABLE+(reqPID)*16+8]=P0;
-multipush(R0,R1,R2);
 
+[PROCESS_TABLE+(reqPID)*16+8]=P0;
+
+multipush(R0,R1,R2);
 alias functionNumber R1;
 functionNumber=9;
-
 call MOD_0;
-
 multipop(R0,R1,R2);
 
 restore;

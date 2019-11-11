@@ -55,6 +55,7 @@ if(fileDesc != -2) then
 	multipop(R1,R2,R3,R4,R5,R6,R7,R8,R9,R10);
 
 	if(R0 == -1) then	//file has been deleted
+
 		multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9,R10);
 		R1 = 5;
 		R2 = currentPID;
@@ -72,6 +73,7 @@ if(fileDesc != -2) then
 	LSeek = [OPEN_FILE_TABLE + 4*fileIndex + 2];
 
 	if(LSeek == MAX_FILE_SIZE) then
+
 		multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11);
 		R1 = 5;
 		R2 = currentPID;
@@ -95,6 +97,7 @@ if(fileDesc != -2) then
 		block_num = R0;
 
 		if(block_num == -1) then
+
 			multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12);
 			R1 = 5;
 			R2 = currentPID;
@@ -109,7 +112,7 @@ if(fileDesc != -2) then
 		endif;
 		[INODE_TABLE + 16*inodeIndex + 8 + (LSeek/512)] = block_num;
 	endif;
-
+//here
 	alias word R13;
 	word = [([PTBR + 2 * ((userSP - 3)/512)]*512) + (userSP-3)%512];
 	multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13);

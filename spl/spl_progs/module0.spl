@@ -50,7 +50,9 @@ if(functionNum == 3) then
 	alias currentPID R2;
 	while([DISK_STATUS_TABLE] == 1) do
 		[PROCESS_TABLE + currentPID * 16 +4]=WAIT_DISK;
+		backup;
 		call MOD_5;
+		restore;
 	endwhile;
 	[DISK_STATUS_TABLE + 4] = currentPID;
 	[DISK_STATUS_TABLE + 0] = 1;
