@@ -83,11 +83,7 @@ if(functionNum == 3) then
      			if(([PROCESS_TABLE+counter*16+4]== WAIT_PROCESS) && ([PROCESS_TABLE+counter*16+5]==currentPID)) then
         			[PROCESS_TABLE+counter*16+4]=READY;
     		 	endif;
-   			counter=counter+1;
-   		endwhile;
 
-  		counter=0;
-   		while(counter<16) do 
      			if([PROCESS_TABLE+counter*16+2]==currentPID) then
         			[PROCESS_TABLE+counter*16+2]=-1;
      			endif;

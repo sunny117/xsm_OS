@@ -103,7 +103,6 @@ endif;
 
 //Seek
 if(syscall == 6) then
-print "in";
 	alias fileDesc R6;
 	fileDesc = [[PTBR + 2*((userSP-4)/512)]*512 + (userSP-4)%512];
 

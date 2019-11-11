@@ -44,4 +44,4 @@ cd ../xfs-interface
 
 
 cd ../xsm
-./xsm --debug
+./xsm --timer 1000 --debug

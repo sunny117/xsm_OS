@@ -17,7 +17,7 @@ int store(str file, int start)
 
     //Store the numbers into the file
     counter=0;
-    while(counter<512) do
+    while(counter<2) do
       val=4*counter+start;
       x=exposcall("Write", fp, val);
       counter=counter+1;

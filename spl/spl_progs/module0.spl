@@ -10,9 +10,9 @@ if(functionNum == 1) then
 		[PROCESS_TABLE + currentPID*16 + 4] = WAIT_BUFFER;
 		[PROCESS_TABLE + currentPID*16 + 5] = bufferNum;
 		
-		multipush(R1,R2,R3);
+		backup;
 		call MOD_5;
-		multipop(R1,R2,R3);
+		restore;
 	endwhile;
 	
 	[BUFFER_TABLE + 4*bufferNum + 2] = currentPID;
@@ -67,7 +67,7 @@ if(functionNum == 4) then
 	while([FILE_STATUS_TABLE + 4*inodeindex] != -1 ) do
 		[PROCESS_TABLE + 16 * currentPID + 4] = WAIT_FILE;
 		[PROCESS_TABLE + 16 * currentPID + 5] = inodeindex;
-		breakpoint;
+	
 		// Invoke the switch_context() function in the Scheduler Module.
 		multipush(R1,R2,R3);
 		call MOD_5;

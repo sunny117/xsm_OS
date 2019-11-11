@@ -1,5 +1,4 @@
 //Exit System Call
-
 //setting mode flag
 [PROCESS_TABLE + [SYSTEM_STATUS_TABLE+1]*16 + 9]  = 10;
 
@@ -13,7 +12,6 @@ R1 = 3;
 R2 = [SYSTEM_STATUS_TABLE + 1];
 call MOD_1;
 restore;
-
 
 //Invoking the scheduler
 call MOD_5;
