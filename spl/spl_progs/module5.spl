@@ -34,8 +34,8 @@ else
 			break;
 		else
 			newPID = newPID + 1;
-			if(newPID == 16) then
-				newPID = 1;		
+			if(newPID == 15) then
+				newPID = 2;		
 			endif;
 			counter = counter + 1;
 		endif; 

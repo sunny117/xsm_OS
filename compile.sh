@@ -36,6 +36,15 @@ cd ../expl
 
 ./expl expl_progs/getpid.expl
 
+./expl expl_progs/delay.expl
+
+./expl expl_progs/num.expl
+./expl expl_progs/pgm1.expl
+
+./expl expl_progs/numbers.expl
+./expl expl_progs/pgm2.expl
+
+./expl expl_progs/merge.expl
 
 
 cd ../xfs-interface
