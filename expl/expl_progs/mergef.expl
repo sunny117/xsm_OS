@@ -12,12 +12,12 @@ int store(str file, int start)
 
   begin
     //Create and open the file
-    x=exposcall("Create", file);
+    x=exposcall("Create", file,1);
     fp=exposcall("Open", file, 1);
 
     //Store the numbers into the file
     counter=0;
-    while(counter<2) do
+    while(counter<512) do
       val=4*counter+start;
       x=exposcall("Write", fp, val);
       counter=counter+1;
@@ -41,7 +41,6 @@ int merge(str out, str in1, str in2)
 
   begin
     //Create and open output file
-
     x=exposcall("Create", out, 1);
     fp=exposcall("Open", out);
 
@@ -92,7 +91,7 @@ int merge(str out, str in1, str in2)
     x=exposcall("Delete", in1);
     x=exposcall("Delete", in2);
 
-    write("Merged");
+    //write("Merged");
     return 0;
   end
 }
@@ -110,6 +109,7 @@ int main()
       if(pid2!=0) then
         //Store the numbers into "temp1.dat"
         x=store("temp1.dat", 1);
+
         x=exposcall("Wait", pid2);
       else
         //Store the numbers into "temp2.dat"
@@ -149,5 +149,3 @@ int main()
     return 1;
   end
 }
-
-

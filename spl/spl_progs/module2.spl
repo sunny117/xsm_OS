@@ -77,9 +77,9 @@ endif;
 //GET_CODE_PAGE
 //Loads a single code page to memory given the block number of the page in the disk. It takes the block number and PID as an argument.
 if(functionNum == 5) then 
-
-	alias counter R3;
 	alias blockNum R2; 
+	alias counter R3;
+
 	counter = 0;
 	while(counter < MAX_PROC_NUM) do
 		alias counter2 R5;
