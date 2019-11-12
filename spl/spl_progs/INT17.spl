@@ -1,0 +1,75 @@
+//Arguments: User name, Password
+
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 9] = 25;
+
+alias userSP R1;
+userSP = SP;
+
+alias currentPID R2;
+currentPID = [SYSTEM_STATUS_TABLE + 1];
+
+alias process_table R3;
+process_table = PROCESS_TABLE + currentPID*16;
+
+[process_table + 13] = SP;
+SP = [process_table + 11]*512 -1;
+
+alias userName R4;
+userName = [[PTBR + 2*((userSP-4)/512)]*512 + (userSP-4)%512];
+
+alias password R5;
+password = [[PTBR + 2*((userSP-3)/512)]*512 + (userSP-3)%512];
+
+alias retVal R6;
+retVal = [PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512;
+
+encrypt password;
+
+if(currentPID != 1) then
+	[retVal] = -2;
+	SP = [process_table + 13];
+	[process_table + 9] = 0;
+	ireturn;
+endif;
+
+alias counter R7;
+counter = 0;
+
+alias userID R8;
+userID = -1;
+
+while(counter < MAX_USER_NUM) do
+	if(userName == [USER_TABLE + 2*counter]) then
+		userID = counter;
+		if([USER_TABLE + 2*counter+1] != password) then
+			[retVal] = -1;
+			SP = [process_table + 13];
+			[process_table + 9] = 0;
+			ireturn;
+		endif;
+		break;
+	endif;
+	counter = counter + 1;
+endwhile;
+
+if(userID == -1) then
+	[retVal] = -1;
+	SP = [process_table + 13];
+	[process_table + 9] = 0;
+	ireturn;
+endif;
+
+[PROCESS_TABLE + 2*16 + 4] = CREATED;
+[PROCESS_TABLE + 2*16 + 3] = userID;
+
+[PROCESS_TABLE + 1*16 + 4] = WAIT_PROCESS;
+[PROCESS_TABLE + 1*16 + 5] = 2;
+[SYSTEM_STATUS_TABLE] = userID;
+backup;
+call MOD_5;
+restore;
+
+[retVal] = 0;
+SP = [process_table + 13];
+[process_table + 9] = 0;
+ireturn;

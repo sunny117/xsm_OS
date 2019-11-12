@@ -1,0 +1,26 @@
+fdisk
+load --exec ../expl/expl_progs/odd100.xsm
+load --exec ../expl/expl_progs/even100.xsm
+load --exec ../expl/expl_progs/getpid.xsm
+load --exec ../expl/expl_progs/pid.xsm
+load --exec ../expl/expl_progs/rw.xsm
+load --exec ../expl/expl_progs/parent.xsm
+load --exec ../expl/expl_progs/child.xsm
+load --exec ../expl/expl_progs/seqmerge.xsm
+load --exec ../expl/expl_progs/conmerge.xsm
+load --exec ../expl/expl_progs/fileC.xsm
+load --exec ../expl/expl_progs/fileD.xsm
+load --exec ../expl/expl_progs/readcon.xsm
+load --exec ../expl/expl_progs/lseek.xsm
+load --data ../expl/expl_progs/sample.dat
+load --data ../expl/expl_progs/numbers.dat
+load --exec ../expl/expl_progs/ls.xsm
+load --exec ../expl/expl_progs/rm.xsm
+load --exec ../expl/expl_progs/cp.xsm
+load --exec ../expl/expl_progs/cat.xsm
+load --exec ../expl/expl_progs/reverse1.xsm
+load --exec ../expl/expl_progs/reverse2.xsm
+load --exec ../expl/expl_progs/fwrite.xsm
+load --exec ../expl/expl_progs/mergef.xsm
+load --exec ../expl/expl_progs/lu.xsm
+load --exec ../expl/expl_progs/ru.xsm

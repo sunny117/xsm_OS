@@ -14,9 +14,12 @@ cd spl
 ./spl spl_progs/INT9.spl
 ./spl spl_progs/INT10.spl
 ./spl spl_progs/INT11.spl
+./spl spl_progs/INT12.spl
 ./spl spl_progs/INT13.spl
 ./spl spl_progs/INT14.spl
 ./spl spl_progs/INT15.spl
+./spl spl_progs/INT16.spl
+./spl spl_progs/INT17.spl
 ./spl spl_progs/module0.spl
 ./spl spl_progs/module1.spl
 ./spl spl_progs/module2.spl
@@ -27,17 +30,12 @@ cd spl
 
 
 cd ../expl
-./expl expl_progs/shellversion2.expl
+./expl expl_progs/login.expl
+./expl expl_progs/shell.expl
 
-./expl expl_progs/ls.expl
-./expl expl_progs/rm.expl
-./expl expl_progs/cp.expl
-./expl expl_progs/cat.expl
+./expl expl_progs/lu.expl
+./expl expl_progs/ru.expl
 
-./expl expl_progs/reverse1.expl
-./expl expl_progs/reverse2.expl
-./expl expl_progs/fwrite.expl
-./expl expl_progs/mergef.expl
 
 cd ../xfs-interface
 ./xfs-interface

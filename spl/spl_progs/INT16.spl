@@ -1,0 +1,222 @@
+//int16
+//Newusr, Remusr, Setpwd, Getuname and Getuid
+// 22, 23, 24, 25 and 26 respectively
+
+alias userSP R1;
+userSP = SP;
+
+alias currentPID R2;
+currentPID = [SYSTEM_STATUS_TABLE + 1];
+
+alias process_table R3;
+process_table = PROCESS_TABLE + currentPID*16;
+
+[process_table + 13] = SP;
+SP = [process_table + 11]*512 -1;
+
+alias userName R4;
+userName = [[PTBR + 2*((userSP-4)/512)]*512 + (userSP-4)%512];
+
+alias password R5;
+password = [[PTBR + 2*((userSP-3)/512)]*512 + (userSP-3)%512];
+
+alias retVal R6;
+retVal = [PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512;
+
+alias syscall R7;
+syscall = [[PTBR + 2*((userSP-5)/512)]*512 + (userSP-5)%512];
+
+[process_table + 9] = syscall;
+
+//NEWUSR
+if(syscall == 22) then
+	if(currentPID != 2 || [SYSTEM_STATUS_TABLE] != 1) then
+
+		[retVal] = -2;
+		[process_table + 9] = 0;
+		SP = [process_table + 13];
+		ireturn;
+	endif;
+
+	encrypt password;
+	alias counter R8;
+	counter = 0;
+
+	while(counter < MAX_USER_NUM) do
+		if([USER_TABLE + 2*counter] == userName) then
+
+			[retVal] = -2;
+			[process_table + 9] = 0;
+			SP = [process_table + 13];
+			ireturn;
+		endif;
+		counter = counter + 1;
+	endwhile;
+
+	alias freeEntry R9;
+	freeEntry = -1;
+
+	counter = 0;
+	while(counter < MAX_USER_NUM) do
+		if([USER_TABLE + 2*counter] == -1) then
+			freeEntry = counter;
+			break;
+		endif;
+		counter = counter + 1;
+	endwhile;
+
+	if(freeEntry == -1) then
+		[retVal] = -3;
+		[process_table + 9] = 0;
+		SP = [process_table + 13];
+		ireturn;
+	endif;
+
+	[USER_TABLE + freeEntry*2] = userName;
+	[USER_TABLE + freeEntry*2 + 1] = password;
+endif;
+
+//REMUSR
+if(syscall == 23) then
+	if(currentPID != 2 || [SYSTEM_STATUS_TABLE] != 1 || userName == "root" || userName == "kernel") then
+		[retVal] = -2;
+		[process_table + 9] = 0;
+		SP = [process_table + 13];
+		ireturn;
+	endif;
+
+	alias counter R8;
+	counter = 0;
+
+	alias userID R9;
+	userID = -1;
+
+	while(counter < MAX_USER_NUM) do
+		if([USER_TABLE + 2*counter] == userName) then
+			userID = counter;
+			break;
+		endif;
+		counter = counter + 1;
+	endwhile;
+
+	if(userID == -1) then
+		[retVal] = -1;
+		[process_table + 9] = 0;
+		SP = [process_table + 13];
+		ireturn;
+	endif;
+
+	counter = 0;
+	while(counter < MAX_FILE_NUM) do
+		if([ROOT_FILE+8*counter] != -1 && [ROOT_FILE+8*counter+3] == userName) then
+			[retVal] = -3;
+			[process_table + 9] = 0;
+			SP = [process_table + 13];
+			ireturn;
+		endif;
+		counter = counter + 1;
+	endwhile;
+
+	[USER_TABLE + 2*userID] = -1;
+	[USER_TABLE + 2*userID + 1] = -1;
+endif;
+
+//SETPWD
+if(syscall == 24) then
+	if(currentPID != 2) then
+		[retVal] = -1;
+		[process_table + 9] = 0;
+		SP = [process_table + 13];
+		ireturn;
+	endif;
+
+	encrypt password;
+
+	alias counter R8;
+	counter = 0;
+
+	alias userID R9;
+	userID = -1;
+
+	while(counter < MAX_USER_NUM) do
+		if([USER_TABLE + 2*counter] == userName) then
+			userID = counter;
+			break;
+		endif;
+		counter = counter + 1;
+	endwhile;
+	
+	if(userID  == -1) then
+		[retVal] = -2;
+		[process_table + 9] = 0;
+		SP = [process_table + 13];
+		ireturn;
+	endif;
+
+	alias userID_process R10;
+	userID_process = [process_table + 3];
+
+	if(userID != userID_process && userID_process != 1) then
+		[retVal] = -1;
+		[process_table + 9] = 0;
+		SP = [process_table + 13];
+		ireturn;
+	endif;
+
+	[USER_TABLE + 2*userID + 1] = password;
+endif;
+
+
+//GETUNAME
+if(syscall == 25) then
+	alias userID R8;
+	userID = [[PTBR + 2*((userSP-4)/512)]*512 + (userSP-4)%512];
+
+	if(userID<0 || userID >= MAX_USER_NUM || [USER_TABLE + 2*userID] == -1) then
+		[retVal] = -1;
+		[process_table + 9] = 0;
+		SP = [process_table + 13];
+		ireturn;
+	endif;
+
+	userName = [USER_TABLE + 2*userID];
+
+	[retVal] = userName;
+	[process_table + 9] = 0;
+	SP = [process_table + 13];
+	ireturn;
+endif;
+
+//GETUID
+if(syscall == 26) then
+	alias counter R8;
+	counter = 0;
+
+	alias userID R9;
+	userID = -1;
+
+	while(counter < MAX_USER_NUM) do
+		if([USER_TABLE + 2*counter] == userName) then
+			userID = counter;
+			break;
+		endif;
+		counter = counter + 1;
+	endwhile;
+
+	if(userID == -1) then
+		[retVal] = -1;
+		[process_table + 9] = 0;
+		SP = [process_table + 13];
+		ireturn;
+	endif;
+
+	[retVal] = userID;
+	[process_table + 9] = 0;
+	SP = [process_table + 13];
+	ireturn;
+endif;
+
+[retVal] = 0;
+[process_table + 9] = 0;
+SP = [process_table + 13];
+ireturn;

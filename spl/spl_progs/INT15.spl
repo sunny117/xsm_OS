@@ -12,7 +12,7 @@ SP = [PROCESS_TABLE + currentPID*16 + 11]*512 - 1;
 
 [PROCESS_TABLE + currentPID*16 + 9] = 21;
 
-if(currentPID != 1 && [PROCESS_TABLE + currentPID*16 + 3] != 1) then
+if(currentPID != 2 && [PROCESS_TABLE + currentPID*16 + 3] != 1) then
 	[[PTBR + 2 * ((userSP - 1) / 512)] * 512 + ((userSP - 1) % 512)]=-1;
 	SP = [PROCESS_TABLE + currentPID * 16 + 13];
 	[PROCESS_TABLE + currentPID * 16 + 9] = 0;

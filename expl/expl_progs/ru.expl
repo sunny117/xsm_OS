@@ -1,0 +1,32 @@
+decl
+    int i,k, semid, pid, temp, filedis, a,b,c,d;
+    string filename,username,data;
+enddecl
+
+int main()
+{
+begin
+    filedis  = exposcall("Open","root");
+    read(username);
+    b = exposcall("Seek",filedis,3);
+    a= 0;
+    if(filedis>=0)then
+    while(a!=-2)  do
+
+	 a = exposcall("Read",filedis,data);
+
+         if(a!=-2)then
+         if(data==username)then
+                b = exposcall("Seek",filedis,-4);
+                c = exposcall("Read",filedis,filename);
+                b = exposcall("Seek",filedis,3);
+                write(filename);
+                d = exposcall("Delete",filename);
+         endif;
+         b = exposcall("Seek",filedis,7);
+         endif;
+    endwhile;
+   endif;
+    return 0;
+end
+}

@@ -144,12 +144,19 @@ if(syscall == 6) then
 	endif;
 
 	alias lseek R10;
-	lseek = [OPEN_FILE_TABLE + 4*fileIndex + 2];
+	lseek = OPEN_FILE_TABLE + 4*fileIndex + 2;
 
 	alias offset R11;
 	offset = [[PTBR + 2*((userSP-3)/512)]*512 + (userSP-3)%512];
 
-	if(lseek + offset < 0) then
+	alias filesize R12; 
+	if([OPEN_FILE_TABLE + 4*fileIndex] == INODE_ROOT) then
+		filesize = 480;
+	else
+		filesize = [INODE_TABLE + inodeIndex*16 + 2];
+	endif;
+
+	if([lseek] + offset < 0) then
 		backup;
 		R1 = 5;
 		R2 = inodeIndex;
@@ -164,12 +171,12 @@ if(syscall == 6) then
 	endif;
 
 	if(offset == 0) then
-		[OPEN_FILE_TABLE + 4*fileIndex + 2] = 0;
+		[lseek] = 0;
 	else
-		if((lseek+offset)>[INODE_TABLE + 16*inodeIndex + 2]) then
-			[OPEN_FILE_TABLE + 4*fileIndex + 2] = [INODE_TABLE + 16*inodeIndex + 2];
+		if(([lseek]+offset)>filesize) then
+			[lseek] = filesize;
 		else
-			[OPEN_FILE_TABLE + 4*fileIndex + 2] = lseek + offset;
+			[lseek] = [lseek] + offset;
 		endif;
 	endif;
 

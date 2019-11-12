@@ -112,7 +112,7 @@ if(fileDesc != -2) then
 		endif;
 		[INODE_TABLE + 16*inodeIndex + 8 + (LSeek/512)] = block_num;
 	endif;
-//here
+
 	alias word R13;
 	word = [([PTBR + 2 * ((userSP - 3)/512)]*512) + (userSP-3)%512];
 	multipush(R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13);

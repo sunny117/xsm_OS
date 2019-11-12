@@ -16,7 +16,10 @@ loadi(64,14);
 
 //init program
 loadi(65,7);
-loadi(66,8);
+
+//shell
+loadi(67,9);
+loadi(68,10);
 
 //exception handler
 loadi(2,15);
@@ -66,6 +69,10 @@ loadi(23,36);
 loadi(24,37);
 loadi(25,38);
 
+//int12(Logout)
+loadi(26,39);
+loadi(27,40);
+
 //int13(Semget, Semrelease)
 loadi(28,41);
 loadi(29,42);
@@ -77,6 +84,14 @@ loadi(31,44);
 //int15(Shutdown)
 loadi(32,45);
 loadi(33,46);
+
+//int16(Newusr,Remusr,Setpwd,Getuname,Getuid)
+loadi(34,47);
+loadi(35,48);
+
+//int17(Login)
+loadi(36,49);
+loadi(37,50);
 
 //module 0(Resource Manager)
 loadi(40,53);
@@ -102,6 +117,7 @@ loadi(49,62);
 loadi(50,63);
 loadi(51,64);
 
+
 //Initializing page table for init process
 PTBR = PAGE_TABLE_BASE+20;
 PTLR = 10;
@@ -113,15 +129,58 @@ PTLR = 10;
 [PTBR+3] = "0100";
 
 //Heap
-[PTBR+4] = 78;
-[PTBR+5] = "0110";
-[PTBR+6] = 79;
-[PTBR+7] = "0110";
+[PTBR+4] = -1;
+[PTBR+5] = "0000";
+[PTBR+6] = -1;
+[PTBR+7] = "0000";
 
 //Code
 [PTBR+8] = 65;
 [PTBR+9] = "0100";
-[PTBR+10] = 66;
+[PTBR+10] = -1;
+[PTBR+11] = "0000";
+[PTBR+12] = -1;
+[PTBR+13] = "0000";
+[PTBR+14] = -1;
+[PTBR+15] = "0000";
+
+//Stack
+[PTBR+16] = 66;
+[PTBR+17] = "0110";
+[PTBR+18] = -1;
+[PTBR+19] = "0000";
+
+[66*512] = [65*512 +1];
+
+[PROCESS_TABLE + 31] = 10;
+[PROCESS_TABLE + 30] = PAGE_TABLE_BASE+20;
+[PROCESS_TABLE + 29] = 8*512;
+[PROCESS_TABLE + 28] = 0;
+[PROCESS_TABLE + 27] = 77;
+[PROCESS_TABLE + 20] = 3;
+[PROCESS_TABLE + 19] = 1;
+[PROCESS_TABLE + 17] = 1;
+
+//Initializing page table for shell process
+PTBR = PAGE_TABLE_BASE+40;
+PTLR = 10;
+
+//library
+[PTBR+0] = 63;
+[PTBR+1] = "0100";
+[PTBR+2] = 64;
+[PTBR+3] = "0100";
+
+//Heap
+[PTBR+4] = -1;
+[PTBR+5] = "0000";
+[PTBR+6] = -1;
+[PTBR+7] = "0000";
+
+//Code
+[PTBR+8] = 67;
+[PTBR+9] = "0100";
+[PTBR+10] = 68;
 [PTBR+11] = "0100";
 [PTBR+12] = -1;
 [PTBR+13] = "0000";
@@ -129,25 +188,30 @@ PTLR = 10;
 [PTBR+15] = "0000";
 
 //Stack
-[PTBR+16] = 76;
+[PTBR+16] = 78;
 [PTBR+17] = "0110";
-[PTBR+18] = 77;
+[PTBR+18] = 79;
 [PTBR+19] = "0110";
 
-[76*512] = [65*512 +1];
+[78*512] = [67*512 +1];
 
-[PROCESS_TABLE + 31] = 10;
-[PROCESS_TABLE + 30] = PAGE_TABLE_BASE+20;
-[PROCESS_TABLE + 29] = 8*512;
-[PROCESS_TABLE + 28] = 0;
-[PROCESS_TABLE + 27] = 80;
-[PROCESS_TABLE + 20] = 3;
-[PROCESS_TABLE + 19] = 1;
-[PROCESS_TABLE + 17] = 1;
+[PROCESS_TABLE + 2*16 + 15] = 10;
+[PROCESS_TABLE + 2*16 + 14] = PAGE_TABLE_BASE+40;
+[PROCESS_TABLE + 2*16 + 13] = 8*512;
+[PROCESS_TABLE + 2*16 + 12] = 0;
+[PROCESS_TABLE + 2*16 + 11] = 80;
+[PROCESS_TABLE + 2*16 +  4] = TERMINATED;
+[PROCESS_TABLE + 2*16 +  3] = 1;
+[PROCESS_TABLE + 2*16 +  2] = 1;
+[PROCESS_TABLE + 2*16 +  1] = 2;
 
+
+
+[DISK_MAP_TABLE+20+4] = 9;
+[DISK_MAP_TABLE+20+5] = 10;
 
 alias i R3;
-i = 2;
+i = 3;
 while(i < 16) do
 	[PROCESS_TABLE + i*16 + 4] = TERMINATED;
 	i = i + 1;
@@ -155,7 +219,7 @@ endwhile;
 
 i = 0;
 while(i<128) do
-	if(i<83) then
+	if(i<81) then
 		[MEMORY_FREE_LIST+i] = 1;
 	else
 		[MEMORY_FREE_LIST+i] = 0;
@@ -165,11 +229,18 @@ endwhile;
 
 [TERMINAL_STATUS_TABLE]=0;
 [DISK_STATUS_TABLE]=0;
-[SYSTEM_STATUS_TABLE+2]=44;
+[SYSTEM_STATUS_TABLE+2]=45;
 [SYSTEM_STATUS_TABLE+3]=0;
+
 i = 0;
 while(i < 16) do
-	[81*512-16+i] = -1;
+	[77*512-16+i] = -1;
+	i = i+1;
+endwhile;
+
+i = 0;
+while(i < 16) do
+	[80*512-16+i] = -1;
 	i = i+1;
 endwhile;
 

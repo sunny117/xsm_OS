@@ -1,0 +1,21 @@
+decl
+    int i,k, semid, pid, data, temp, filedis, a,b;
+    string filename;
+enddecl
+
+int main()
+{
+begin
+    a= 0;
+    while(a<16)do
+      temp = exposcall("Getuname",a);
+      if(temp!=-1)then
+      write(temp);
+      endif;
+      a=a+1;
+     endwhile;
+    return 0;
+end
+}
+
+

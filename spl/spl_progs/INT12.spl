@@ -1,0 +1,41 @@
+//no argumernts
+
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1]*16 + 9] = 28;
+
+alias userSP R1;
+userSP = SP;
+
+alias currentPID R2;
+currentPID = [SYSTEM_STATUS_TABLE + 1];
+
+alias process_table R3;
+process_table = PROCESS_TABLE + currentPID*16;
+
+[process_table + 13] = SP;
+SP = [process_table + 11]*512 -1;
+
+alias retVal R4;
+retVal = [[PTBR + 2*((userSP-1)/512)]*512 + (userSP-1)%512];
+
+if(currentPID != 2) then
+	[retVal] = -1;
+	SP = [process_table + 13];
+	[process_table + 9] = 0;
+	ireturn;
+endif;
+
+backup;
+R1 = 5; 
+R2 = currentPID;
+call MOD_1;
+restore;
+
+[process_table + 4] = TERMINATED;
+[process_table + 13] = 8*512;
+
+[[PTBR +16]*512] = [[PTBR +8]*512 + 1];
+
+[PROCESS_TABLE + 1*16 + 4] = READY;
+[SYSTEM_STATUS_TABLE] = 0;
+
+call MOD_5;
