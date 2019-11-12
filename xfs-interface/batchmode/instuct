@@ -27,5 +27,6 @@ load --module 2 ../spl/spl_progs/module2.xsm
 load --module 3 ../spl/spl_progs/module3.xsm
 load --module 4 ../spl/spl_progs/module4.xsm
 load --module 5 ../spl/spl_progs/module5.xsm
+load --module 6 ../spl/spl_progs/module6.xsm
 load --module 7 ../spl/spl_progs/module7.xsm
 exit

@@ -9,28 +9,44 @@ process_table_entry = PROCESS_TABLE + currentPID * 16;
 [process_table_entry + 15] = PTLR;
 
 alias newPID R3;
+alias counter R4;
+
 newPID = currentPID + 1;
 if(newPID == 16) then
-	newPID = 1;
+	newPID = 2;
 endif;
-alias counter R4;
-counter = 1;
-while(counter != 16) do
-	if([PROCESS_TABLE + newPID * 16 + 4] == READY || [PROCESS_TABLE + newPID * 16 + 4] == CREATED) then
-		break;
+
+if([SYSTEM_STATUS_TABLE + 5] !=0) then
+	alias swapper_daemon R5;
+	swapper_daemon = [PROCESS_TABLE + 15*16 + 4];
+	
+	if(swapper_daemon == READY || swapper_daemon == CREATED || swapper_daemon == RUNNING) then
+		newPID = 15;
 	else
-		newPID = newPID + 1;
-		if(newPID == 16) then
-			newPID = 1;		
-		endif;
-		counter = counter + 1;
-	endif; 
-endwhile;
+		newPID = 0;
+	endif;
+else
+	counter = 1;
+	while(counter != 16) do
+		alias new_process_table R6;
+		new_process_table = PROCESS_TABLE + newPID*16;
+		if(([new_process_table + 4] == READY || [new_process_table + 4] == CREATED) && [new_process_table+6]!=1) then
+			break;
+		else
+			newPID = newPID + 1;
+			if(newPID == 16) then
+				newPID = 1;		
+			endif;
+			counter = counter + 1;
+		endif; 
+	endwhile;
+
+
+endif;
 
 if(counter == 16) then
 	newPID = 0;
 endif;
-
 
 alias new_process_table R5;
 new_process_table = PROCESS_TABLE + newPID * 16;

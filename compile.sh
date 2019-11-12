@@ -26,6 +26,7 @@ cd spl
 ./spl spl_progs/module3.spl
 ./spl spl_progs/module4.spl
 ./spl spl_progs/module5.spl
+./spl spl_progs/module6.spl
 ./spl spl_progs/module7.spl
 
 
@@ -33,8 +34,8 @@ cd ../expl
 ./expl expl_progs/login.expl
 ./expl expl_progs/shell.expl
 
-./expl expl_progs/lu.expl
-./expl expl_progs/ru.expl
+./expl expl_progs/getpid.expl
+
 
 
 cd ../xfs-interface
@@ -42,4 +43,4 @@ cd ../xfs-interface
 
 
 cd ../xsm
-./xsm --timer 1000 --debug
+./xsm

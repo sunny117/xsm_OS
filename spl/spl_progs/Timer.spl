@@ -7,7 +7,61 @@ currentPID = [SYSTEM_STATUS_TABLE+1];
 
 alias process_table_entry R1;
 process_table_entry = PROCESS_TABLE + currentPID*16;
+
+//Pager module
+
+alias counter R2;
+
+if([SYSTEM_STATUS_TABLE + 5] != 0) then
+	if(currentPID == 15 && [SYSTEM_STATUS_TABLE + 5] == 1)  then
+		backup;
+		R1 = 1;
+		R2 = currentPID;
+		call MOD_6;
+		restore;
+	else
+		if(currentPID == 15 && [SYSTEM_STATUS_TABLE + 5] == 2) then
+			backup;
+			R1 = 2;
+			R2 = currentPID;
+			call MOD_6;
+			restore;
+		endif;
+	endif;
+else
+	if([SYSTEM_STATUS_TABLE + 2] < MEM_LOW) then
+		[SYSTEM_STATUS_TABLE+5] = 1;
+	else
+		if([SYSTEM_STATUS_TABLE+4] != 0) then
+			counter = 3;
+			while(counter < 15) do
+				alias process_table R3;
+				process_table = PROCESS_TABLE + counter*16;
+				if([process_table + 6] == 1 && [process_table] > MAX_TICK) then
+					[SYSTEM_STATUS_TABLE+5] = 2;
+					break;
+				endif;
+				counter = counter + 1;
+			endwhile;
+
+			if(counter == 15 && [SYSTEM_STATUS_TABLE + 2] > MEM_HIGH) then
+				[SYSTEM_STATUS_TABLE + 5] = 2;
+			endif;
+		endif;
+	endif;
+endif;
+
+
 [process_table_entry + 4] = READY;
+
+counter = 0;
+
+while(counter < 16) do
+	if([PROCESS_TABLE + counter*16 + 4] != TERMINATED) then
+		[PROCESS_TABLE + counter*16] = [PROCESS_TABLE+counter*16] + 1;
+	endif;
+	counter = counter + 1;
+endwhile;
 
 call MOD_5;
 

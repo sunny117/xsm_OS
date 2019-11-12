@@ -11,7 +11,7 @@ loadi(55,68);
 SP = 76*512 -1;
 call BOOT_MODULE;
 
-//Initializing page table for idle process
+//Initializing page table for idle1 process
 PTBR = PAGE_TABLE_BASE;
 PTLR = 10;
 
@@ -51,7 +51,53 @@ PTLR = 10;
 [PROCESS_TABLE + 12] = 0;
 [PROCESS_TABLE + 11] = 76;
 [PROCESS_TABLE + 4] = 2;
+[PROCESS_TABLE + 3] = 0;
 [PROCESS_TABLE + 1] = 0;
+
+SP = 8*512;
+
+//Initializing page table for swapper Daemon process
+PTBR = PAGE_TABLE_BASE + 20*15;
+PTLR = 10;
+
+//Library
+[PTBR+0] = -1;
+[PTBR+1] = "0000";
+[PTBR+2] = -1;
+[PTBR+3] = "0000";
+
+//Heap
+[PTBR+4] = -1;
+[PTBR+5] = "0000";
+[PTBR+6] = -1;
+[PTBR+7] = "0000";
+
+//Code
+[PTBR+8] = 69;
+[PTBR+9] = "0100";
+[PTBR+10] = -1;
+[PTBR+11] = "0000";
+[PTBR+12] = -1;
+[PTBR+13] = "0000";
+[PTBR+14] = -1;
+[PTBR+15] = "0000";
+
+//Stack
+[PTBR+16] = 81;
+[PTBR+17] = "0110";
+[PTBR+18] = -1;
+[PTBR+19] = "0000";
+
+[81*512] = [69*512 +1];
+
+[PROCESS_TABLE + 16*15 + 15] = 10;
+[PROCESS_TABLE + 16*15 + 14] = PAGE_TABLE_BASE + 20*15;
+[PROCESS_TABLE + 16*15 + 13] = 8*512;
+[PROCESS_TABLE + 16*15 + 12] = 0;
+[PROCESS_TABLE + 16*15 + 11] = 82;
+[PROCESS_TABLE + 16*15 + 4] = 2;
+[PROCESS_TABLE + 16*15 + 3] = 0;
+[PROCESS_TABLE + 16*15 + 1] = 15;
 
 SP = 8*512;
 

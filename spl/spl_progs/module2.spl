@@ -109,3 +109,24 @@ if(functionNum == 5) then
 	return;
 endif;
 
+//GET_SWAP_BLOCK
+//Returns the block number of a free disk block in the swap area
+if(functionNum == 6) then
+	alias counter R0;
+	counter = DISK_SWAP_AREA;
+	
+	while(counter < DISK_SIZE) do
+		if([DISK_FREE_LIST+counter] == 0) then
+			[DISK_FREE_LIST+counter] = 1;
+			break;		
+		endif;
+		counter = counter + 1;
+	endwhile;
+
+	if(counter == DISK_SIZE) then
+		R0 = -1;
+	endif;
+	return;
+endif;
+
+
