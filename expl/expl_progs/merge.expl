@@ -14,8 +14,8 @@ int store(str file, int start)
 
   begin
     //Create and open the file
-    x=exposcall("Create", file);
-    fp=exposcall("Open", file, 1);
+    x=exposcall("Create", file,1);
+    fp=exposcall("Open", file);
 
     //Store the numbers into the file
     counter=0;

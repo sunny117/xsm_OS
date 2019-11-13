@@ -161,7 +161,7 @@ PTLR = 10;
 [PROCESS_TABLE + 28] = 0;
 [PROCESS_TABLE + 27] = 77;
 [PROCESS_TABLE + 20] = 3;
-[PROCESS_TABLE + 19] = 1;
+[PROCESS_TABLE + 19] = KERNEL;
 [PROCESS_TABLE + 17] = 1;
 
 //Initializing page table for shell process
@@ -198,22 +198,37 @@ PTLR = 10;
 
 [78*512] = [67*512 +1];
 
-[PROCESS_TABLE + 2*16 + 15] = 10;
-[PROCESS_TABLE + 2*16 + 14] = PAGE_TABLE_BASE+40;
-[PROCESS_TABLE + 2*16 + 13] = 8*512;
-[PROCESS_TABLE + 2*16 + 12] = 0;
-[PROCESS_TABLE + 2*16 + 11] = 80;
-[PROCESS_TABLE + 2*16 +  4] = TERMINATED;
-[PROCESS_TABLE + 2*16 +  3] = 1;
-[PROCESS_TABLE + 2*16 +  2] = 1;
-[PROCESS_TABLE + 2*16 +  1] = 2;
+alias process_table R3;
+process_table = PROCESS_TABLE + 2*16;
+
+[process_table + 15] = 10;
+[process_table + 14] = PAGE_TABLE_BASE+40;
+[process_table + 13] = 8*512;
+[process_table + 12] = 0;
+[process_table + 11] = 80;
+[process_table +  4] = TERMINATED;
+[process_table +  3] = ROOT;
+[process_table +  2] = 1;
+[process_table +  1] = 2;
 
 
 
-[DISK_MAP_TABLE+20+4] = 9;
-[DISK_MAP_TABLE+20+5] = 10;
+alias i R4;
 
-alias i R3;
+i=0;
+while(i<10) do
+	alias disk_map_table R5;
+	disk_map_table = DISK_MAP_TABLE + 20;
+	[disk_map_table + i] = -1;
+	if(i==4) then
+		[disk_map_table + i] = 9;
+	endif;
+	if(i==5) then
+		[disk_map_table + i] = 10;
+	endif;
+	i = i+1;
+endwhile;
+
 i = 3;
 while(i < 16) do
 	[PROCESS_TABLE + i*16] = 0;

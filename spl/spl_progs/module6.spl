@@ -1,6 +1,6 @@
 alias functionNum R1;
 alias returnValue R0;
-print "pager";
+
 if(functionNum == 1) then
 	alias currentPID R2;
 	

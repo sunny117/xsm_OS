@@ -16,7 +16,7 @@ currentPID = [SYSTEM_STATUS_TABLE+1];
 alias functionNum R1;
 
 if(EC!=0 || (userSP == PTLR*512-1)) then
-	print "terminating!!!";
+	print "terminating!!";
 
 	multipush(R0,R1,R2);
 	R1 = 3;		//exit_process()

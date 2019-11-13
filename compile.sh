@@ -52,4 +52,4 @@ cd ../xfs-interface
 
 
 cd ../xsm
-./xsm
+./xsm --timer 1000
