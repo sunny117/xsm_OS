@@ -48,6 +48,9 @@ if(counter == 16) then
 	newPID = 0;
 endif;
 
+if(newPID == 0) then
+breakpoint;
+endif;
 alias new_process_table R5;
 new_process_table = PROCESS_TABLE + newPID * 16;
 SP = [new_process_table + 11]*512 + [new_process_table +12];

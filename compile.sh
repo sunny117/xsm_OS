@@ -45,6 +45,9 @@ cd ../expl
 ./expl expl_progs/pgm2.expl
 
 ./expl expl_progs/merge.expl
+./expl expl_progs/m_store.expl
+./expl expl_progs/m_sort.expl
+./expl expl_progs/m_merge.expl
 
 
 cd ../xfs-interface
@@ -52,4 +55,4 @@ cd ../xfs-interface
 
 
 cd ../xsm
-./xsm --timer 1000
+./xsm --timer 100

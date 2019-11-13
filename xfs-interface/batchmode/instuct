@@ -30,6 +30,9 @@ load --exec ../expl/expl_progs/pgm1.xsm
 load --exec ../expl/expl_progs/numbers.xsm
 load --exec ../expl/expl_progs/pgm2.xsm
 load --exec ../expl/expl_progs/merge.xsm
+load --exec ../expl/expl_progs/m_store.xsm
+load --exec ../expl/expl_progs/m_sort.xsm
+load --exec ../expl/expl_progs/m_merge.xsm
 load --os ../spl/spl_progs/os_startup.xsm
 load --library ../expl/library.lib
 load --idle ../expl/samples/idleprogram.xsm

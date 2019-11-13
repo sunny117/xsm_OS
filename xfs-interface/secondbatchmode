@@ -24,3 +24,12 @@ load --exec ../expl/expl_progs/fwrite.xsm
 load --exec ../expl/expl_progs/mergef.xsm
 load --exec ../expl/expl_progs/lu.xsm
 load --exec ../expl/expl_progs/ru.xsm
+load --exec ../expl/expl_progs/delay.xsm
+load --exec ../expl/expl_progs/num.xsm
+load --exec ../expl/expl_progs/pgm1.xsm
+load --exec ../expl/expl_progs/numbers.xsm
+load --exec ../expl/expl_progs/pgm2.xsm
+load --exec ../expl/expl_progs/merge.xsm
+load --exec ../expl/expl_progs/m_store.xsm
+load --exec ../expl/expl_progs/m_sort.xsm
+load --exec ../expl/expl_progs/m_merge.xsm

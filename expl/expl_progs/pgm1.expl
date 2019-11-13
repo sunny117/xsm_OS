@@ -47,9 +47,10 @@ begin
 
     permission=1;
     temp=exposcall("Create",filename,permission);
+
     fdwrite=exposcall("Open",filename);
     fdread=exposcall("Open","num.dat");
-          
+ 
     if(fdread>=0 AND fdwrite>=0) then
         offset=(pid-3)*100;
         temp=exposcall("Seek",fdread,offset);
@@ -61,12 +62,13 @@ begin
             iter=iter+1;
         endwhile;
 
+
         temp=exposcall("Close", fdread);
         temp=exposcall("Close", fdwrite);
     else
         temp=exposcall("Write", -2, "OPEN FAIL");
     endif;
-          
+        
     return 0;
 end
 }

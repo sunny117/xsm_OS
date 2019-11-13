@@ -2,8 +2,7 @@ alias functionNum R1;
 alias returnValue R0;
 
 if(functionNum == 1) then
-	alias currentPID R2;
-	
+	alias currentPID R2;	
 	alias counter R3;
 	alias swap_process R4;
 	swap_process = -1;	
@@ -114,7 +113,7 @@ if(functionNum == 1) then
 	[process_table + 6] = 1;
 	[SYSTEM_STATUS_TABLE + 4] = [SYSTEM_STATUS_TABLE + 4]+1;
 	[SYSTEM_STATUS_TABLE + 5] = 0;
-	
+
 	return;
 endif;
 

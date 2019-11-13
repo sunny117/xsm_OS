@@ -10,9 +10,9 @@ if(functionNum == 1) then
 		[PROCESS_TABLE + currentPID*16 + 4] = WAIT_BUFFER;
 		[PROCESS_TABLE + currentPID*16 + 5] = bufferNum;
 		
-		backup;
+		multipush(R1,R2,R3);
 		call MOD_5;
-		restore;
+		multipop(R1,R2,R3);
 	endwhile;
 	
 	[BUFFER_TABLE + 4*bufferNum + 2] = currentPID;
@@ -34,8 +34,8 @@ if(functionNum == 2) then
 	counter = 0;
 
 	while(counter < 16) do
-		if([PROCESS_TABLE + currentPID*16 + 4] == WAIT_BUFFER && [PROCESS_TABLE + currentPID*16 + 5] == bufferNum) then
-			[PROCESS_TABLE + currentPID*16 + 4] = READY;
+		if([PROCESS_TABLE + counter*16 + 4] == WAIT_BUFFER && [PROCESS_TABLE + counter*16 + 5] == bufferNum) then
+			[PROCESS_TABLE + counter*16 + 4] = READY;
 		endif;
 		counter = counter + 1;
 	endwhile;
